@@ -1,0 +1,80 @@
+/* 
+    this is the page where user will see : -
+        * his location
+        * his team members location
+        * current clue
+        * current points
+        * current clue
+    
+    import these comoponents from src/Components
+        * map (where positions are shown)
+        * clue (which shows the current clue)
+        * checkLocation (which checks the current location and matches it with the location clue is poinnting)
+        * lets see
+*/
+
+import React from 'react';
+import { Box, Grid, Container, Typography, AppBar, Toolbar, CssBaseline } from '@mui/material';
+// Import components
+import Map from '../../Components/CurrentMap/Map';
+// import Clue from '../Components/clue';
+// import CheckLocation from '../Components/checkLocation';
+
+const MapPage = () => {
+    return (
+        <Container maxWidth="lg">
+            <CssBaseline />
+            
+            {/* Header */}
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        Treasure Hunt
+                    </Typography>
+                </Toolbar>
+            </AppBar>
+            
+            {/* Main Content */}
+            <Grid container spacing={3} sx={{ mt: 3 }}>
+                
+                {/* Map Section */}
+                <Grid item xs={12} md={8}>
+                    <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2, height: { xs: '50vh', md: '70vh' } }}>
+                        {/* // <Map /> */}
+                        <Map
+                            liveLocationMarkers={[
+                                { latitude: 25.4921, longitude: 81.8635, userID: 'User1', profilePicUrl: '' },
+                                { latitude: 25.4923, longitude: 81.8640, userID: 'User2', profilePicUrl: '' },
+                            ]}
+                            clueMarkers={[
+                                { latitude: 25.4925, longitude: 81.8645 },
+                                { latitude: 25.4927, longitude: 81.8647 },
+                            ]}
+                        />
+
+                    </Box>
+                </Grid>
+                
+                {/* Clue and Points Section */}
+                <Grid item xs={12} md={4}>
+                    <Box sx={{ mb: 3, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                        {/* <Clue/> */}
+                    </Box>
+                    <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                        {/* <CheckLocation/> */}
+                    </Box>
+                </Grid>
+                
+            </Grid>
+            
+            {/* Footer */}
+            <Box component="footer" sx={{ p: 2, mt: 3, textAlign: 'center', bgcolor: 'background.paper', borderTop: '1px solid #ddd' }}>
+                <Typography variant="body2" color="textSecondary">
+                    &copy; 2024 Treasure Hunt App
+                </Typography>
+            </Box>
+        </Container>
+    );
+}
+
+export default MapPage;
