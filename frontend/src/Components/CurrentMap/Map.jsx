@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import example from '../Assists/example.jpeg';
 import clueImage from '../Assists/clue.jpeg'
+import avatarImage from '../Assists/avatar.jpeg';
 import './Map.css';
 
 // Default map center for MNNIT Allahabad
@@ -28,8 +29,24 @@ const createClueIcon = () => {
     });
 };
 
+// A utility function to create custom icon for my loaction
+const createMeIcon = () => {
+    return L.icon({
+        iconUrl: avatarImage,
+        iconSize: [40, 40], // Adjust icon size
+        className: 'custom-icon',
+    });
+};
+
 // Main Map component
-const Map = ({ liveLocationMarkers, clueMarkers }) => {
+const Map = ({ liveLocationMarkers, clueMarkers, myLocation }) => {
+    
+    const [location, setLocation] = useState(myLocation);
+
+    useEffect(() => {
+        setLocation(location);
+    }, location);
+
     return (
         
         <MapContainer center={MNNIT_CENTER} zoom={ZOOM_LEVEL} style={{ height: '100%', width: '100%' }}>
@@ -66,6 +83,16 @@ const Map = ({ liveLocationMarkers, clueMarkers }) => {
                     </Popup>
                 </Marker>
             ))}
+            {/* My Location */}
+            <Marker
+                key={123}
+                position={[myLocation.latitude == null? 0 : myLocation.latitude, myLocation.longitude == null? 0 : myLocation.longitude]}
+                icon = {createMeIcon()}
+            >
+                <Popup>
+                    <p>My Location</p>
+                </Popup>
+            </Marker>
         </MapContainer>
     );
 };

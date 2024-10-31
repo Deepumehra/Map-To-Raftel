@@ -13,7 +13,7 @@
         * lets see
 */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Box, Grid, Container, Typography, AppBar, Toolbar, CssBaseline } from '@mui/material';
 // Import components
 import Map from '../../Components/CurrentMap/Map';
@@ -21,6 +21,31 @@ import Map from '../../Components/CurrentMap/Map';
 // import CheckLocation from '../Components/checkLocation';
 
 const MapPage = () => {
+
+    const [location, setLocation] = useState({ latitude: null, longitude: null });
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!navigator.geolocation) {
+            setError("Geolocation is not supported by your browser");
+            return;
+        }
+        
+        const success = (position) => {
+            setLocation({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            });
+        };
+
+        const error = () => {
+            console.log("Geolocation is not supported by your browser");
+            setError("Unable to retrieve your location");
+        };
+
+        navigator.geolocation.getCurrentPosition(success, error);
+    }, []);
+
     return (
         <Container maxWidth="lg">
             <CssBaseline />
@@ -50,6 +75,7 @@ const MapPage = () => {
                                 { latitude: 25.4925, longitude: 81.8645 },
                                 { latitude: 25.4927, longitude: 81.8647 },
                             ]}
+                            myLocation = {{latitude:location.latitude, longitude:location.longitude}}
                         />
 
                     </Box>
