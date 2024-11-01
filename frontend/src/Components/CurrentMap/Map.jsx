@@ -1,10 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+/* eslint-disable react/prop-types */
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import example from '../Assists/example.jpeg';
-import clueImage from '../Assists/clue.jpeg'
+import React, { useEffect, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import avatarImage from '../Assists/avatar.jpeg';
+import clueImage from '../Assists/clue.jpeg';
+import example from '../Assists/example.jpeg';
 import './Map.css';
 
 // Default map center for MNNIT Allahabad
