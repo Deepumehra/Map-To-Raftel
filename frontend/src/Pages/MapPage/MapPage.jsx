@@ -13,8 +13,8 @@
         * lets see
 */
 
-import React, {useState, useEffect} from 'react';
-import { Box, Grid, Container, Typography, AppBar, Toolbar, CssBaseline } from '@mui/material';
+import { AppBar, Box, Container, CssBaseline, Grid, Toolbar, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 // Import components
 import './MapPage.css';
 import Map from '../../Components/CurrentMap/Map';

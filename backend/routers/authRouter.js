@@ -1,10 +1,11 @@
-const express=require('express');
-const router=express.router();
-const authController=require('../controllers/authController.js');
-const authenticate=require('../middlewares/authenticate.js');
-router.post('/signup',authController.singup);
-router.post('/login',authController.login);
-router.get('/profile',authenticate,authController.getProfile);
-router.get('/logout',authenticate,authController.logout);
+const express = require('express');
+const router = express.Router();
+const { googleLogin, register, login, generateOTP, verifyOTP } = require('../controllers/authController.js');
 
-module.exports=router;
+router.get('/google', googleLogin);
+router.post('/signup', register);
+router.post('/signin', login);
+router.post('/request-otp', generateOTP);
+router.post('/verify-otp', verifyOTP);
+
+module.exports = router;
