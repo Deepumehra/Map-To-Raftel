@@ -1,6 +1,5 @@
 const mongoose=require('mongoose');
 const UserSchema=new mongooose.Schema({
-    userId:String,
     userName:{
         type:String,
         required:[true,'User Name is required'],
@@ -36,5 +35,5 @@ const UserSchema=new mongooose.Schema({
         default:'ADMIN'
     }
 })
-const User=mongoose.model('User',UserSchema);
-module.exports=User;
+const Profile=mongoose.model('Profile',UserSchema);
+module.exports=Profile;

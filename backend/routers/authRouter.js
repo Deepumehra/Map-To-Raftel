@@ -1,5 +1,11 @@
-const express=require('express');
-const router=express.Router();
-const {googleLogin}=require('../controllers/authController.js');
-router.get('/google',googleLogin);
-module.exports=router;
+const express = require('express');
+const router = express.Router();
+const { googleLogin, register, login, generateOTP, verifyOTP } = require('../controllers/authController.js');
+
+router.get('/google', googleLogin);
+router.post('/signup', register);
+router.post('/signin', login);
+router.post('/request-otp', generateOTP);
+router.post('/verify-otp', verifyOTP);
+
+module.exports = router;
