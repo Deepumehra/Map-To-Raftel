@@ -16,8 +16,10 @@
 import React, {useState, useEffect} from 'react';
 import { Box, Grid, Container, Typography, AppBar, Toolbar, CssBaseline } from '@mui/material';
 // Import components
+import './MapPage.css';
 import Map from '../../Components/CurrentMap/Map';
-// import Clue from '../Components/clue';
+import Footer from '../../Components/Footer/Footer';
+import Clue from '../../Components/Clue/Clue';
 // import CheckLocation from '../Components/checkLocation';
 
 const MapPage = () => {
@@ -47,8 +49,8 @@ const MapPage = () => {
     }, []);
 
     return (
-        <Container maxWidth="lg">
-            <CssBaseline />
+        <Container>
+            {/* <CssBaseline /> */}
             
             {/* Header */}
             <AppBar position="static">
@@ -85,6 +87,7 @@ const MapPage = () => {
                 <Grid item xs={12} md={4}>
                     <Box sx={{ mb: 3, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
                         {/* <Clue/> */}
+                        <Clue clueID={1} title="First Clue" message="Find the tallest tree in the park." />
                     </Box>
                     <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
                         {/* <CheckLocation/> */}
@@ -94,11 +97,7 @@ const MapPage = () => {
             </Grid>
             
             {/* Footer */}
-            <Box component="footer" sx={{ p: 2, mt: 3, textAlign: 'center', bgcolor: 'background.paper', borderTop: '1px solid #ddd' }}>
-                <Typography variant="body2" color="textSecondary">
-                    &copy; 2024 Treasure Hunt App
-                </Typography>
-            </Box>
+            <Footer/>
         </Container>
     );
 }
