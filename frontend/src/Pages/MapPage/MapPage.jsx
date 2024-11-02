@@ -1,110 +1,120 @@
-/* 
-    this is the page where user will see : -
-        * his location
-        * his team members location
-        * current clue
-        * current points
-        * current clue
-    
-    import these comoponents from src/Components
-        * map (where positions are shown)
-        * clue (which shows the current clue)
-        * checkLocation (which checks the current location and matches it with the location clue is poinnting)
-        * lets see
-*/
-
-import { AppBar, Box, Container, CssBaseline, Button, Grid, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Grid, Toolbar, Typography, TextField, IconButton } from '@mui/material';
 import { useEffect, useState } from 'react';
-// Import components
-import './MapPage.css';
+import {io} from 'socket.io-client';
 import Map from '../../Components/CurrentMap/Map';
 import Footer from '../../Components/Footer/Footer';
 import Clue from '../../Components/Clue/Clue';
-// import CheckLocation from '../Components/checkLocation';
+import SendIcon from '@mui/icons-material/Send';
+import './MapPage.css';
+
+const socket = io('http://your-socket-server-url');
 
 const MapPage = () => {
-
     const [location, setLocation] = useState({ latitude: null, longitude: null });
-    const [error, setError] = useState(null);
+    const [teamLocations, setTeamLocations] = useState([]);
+    const [chatMessages, setChatMessages] = useState([]);
+    const [message, setMessage] = useState('');
+    const [points, setPoints] = useState(0);
+    const [currentClue, setCurrentClue] = useState({ clueID: 1, title: "First Clue", message: "Find the tallest tree in the park." });
 
     useEffect(() => {
-        if (!navigator.geolocation) {
-            setError("Geolocation is not supported by your browser");
-            return;
+        socket.connect();
+
+        socket.on('team-location-update', (locations) => {
+            setTeamLocations(locations);
+        });
+
+        socket.on('new-chat-message', (msg) => {
+            setChatMessages(prevMessages => [...prevMessages, msg]);
+        });
+
+        socket.on('clue-update', (newClue) => {
+            setCurrentClue(newClue);
+            setPoints(prevPoints => prevPoints + 1);
+        });
+
+        return () => socket.disconnect();
+    }, []);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            const success = (position) => {
+                const { latitude, longitude } = position.coords;
+                setLocation({ latitude, longitude });
+                socket.emit('share-location', { latitude, longitude });
+            };
+            navigator.geolocation.watchPosition(success);
         }
-        
-        const success = (position) => {
-            setLocation({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-            });
-        };
-
-        const error = () => {
-            console.log("Geolocation is not supported by your browser");
-            setError("Unable to retrieve your location");
-        };
-
-        navigator.geolocation.getCurrentPosition(success, error);
     }, []);
 
     const handleCheckLocation = () => {
-        // the check location functionality will come here
+        socket.emit('check-location', location, (response) => {
+            if (response.success) {
+                console.log("Location matched! Clue solved.");
+            }
+        });
+    };
+
+    const sendMessage = () => {
+        if (message.trim()) {
+            socket.emit('send-chat-message', message);
+            setMessage('');
+        }
     };
 
     return (
         <div>
-            {/* <CssBaseline /> */}
-            
-            {/* Header */}
             <AppBar position="static">
                 <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         Treasure Hunt
                     </Typography>
                 </Toolbar>
             </AppBar>
             
-            {/* Main Content */}
-            <Grid container spacing={3} sx={{ mt: 3, paddingBottom: 2}}>
-                
-                {/* Map Section */}
+            <Grid container spacing={3} sx={{ mt: 3, paddingBottom: 2 }}>
                 <Grid item xs={12} md={8}>
-                    <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2, height: { xs: '50vh', md: '70vh' } }}>
-                        {/* // <Map /> */}
-                        <Map
-                            liveLocationMarkers={[
-                                { latitude: 25.4921, longitude: 81.8635, userID: 'User1', profilePicUrl: '' },
-                                { latitude: 25.4923, longitude: 81.8640, userID: 'User2', profilePicUrl: '' },
-                            ]}
-                            clueMarkers={[
-                                { latitude: 25.4925, longitude: 81.8645 },
-                                { latitude: 25.4927, longitude: 81.8647 },
-                            ]}
-                            myLocation = {{latitude:location.latitude, longitude:location.longitude}}
-                        />
-
+                    <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2, height: '70vh' }}>
+                        <Map liveLocationMarkers={teamLocations} myLocation={location} />
+                    </Box>
+                    <Box sx={{ mt: 3, p: 2, border: '1px solid #ccc', borderRadius: 2, maxHeight: '50vh', overflowY: 'auto' }}>
+                        <Typography variant="h6">Team Chat</Typography>
+                        <Box>
+                            {chatMessages.map((msg, index) => (
+                                <Box key={index} sx={{ mb: 1, p: 1, bgcolor: '#f1f1f1', borderRadius: 2 }}>
+                                    <Typography variant="body2">{msg}</Typography>
+                                </Box>
+                            ))}
+                        </Box>
+                        <Box display="flex" mt={1}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Type a message..."
+                            />
+                            <IconButton color="primary" onClick={sendMessage}>
+                                <SendIcon />
+                            </IconButton>
+                        </Box>
                     </Box>
                 </Grid>
-                
-                {/* Clue and Points Section */}
+
                 <Grid item xs={12} md={4}>
                     <Box sx={{ mb: 3, p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
-                        {/* <Clue/> */}
-                        <Clue clueID={1} title="First Clue" message="Find the tallest tree in the park." />
+                        <Clue clueID={currentClue.clueID} title={currentClue.title} message={currentClue.message} />
                     </Box>
                     <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
-                        {/* <CheckLocation/> */}
-                        <Button variant='contained' height='inherit' width='inherit' onClick={handleCheckLocation} >Check Location</Button>
+                        <Button variant='contained' onClick={handleCheckLocation}>Check Location</Button>
                     </Box>
                 </Grid>
-                
             </Grid>
-            
-            {/* Footer */}
-            <Footer/>
+
+            <Footer />
         </div>
     );
-}
+};
 
 export default MapPage;

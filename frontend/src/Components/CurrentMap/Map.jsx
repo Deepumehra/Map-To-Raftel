@@ -62,7 +62,7 @@ const Map = ({ liveLocationMarkers, clueMarkers, myLocation }) => {
             ))}
 
             {/* Clue Markers */}
-            {clueMarkers.map((clue, index) => (
+            {clueMarkers?.map((clue, index) => (
                 <Marker
                     key={index}
                     position={[clue.latitude, clue.longitude]}
