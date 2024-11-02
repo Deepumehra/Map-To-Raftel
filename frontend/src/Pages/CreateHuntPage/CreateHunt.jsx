@@ -74,7 +74,7 @@ const CreateHuntPage = () => {
     };
 
     return (
-        <Container maxWidth="lg">
+        <div>
             {/* Page Header */}
             <AppBar position="static">
                 <Toolbar>
@@ -153,7 +153,7 @@ const CreateHuntPage = () => {
                     </Button>
                 </DialogContent>
             </Dialog>
-        </Container>
+        </div>
     );
 };
 

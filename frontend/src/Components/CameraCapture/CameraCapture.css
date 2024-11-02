@@ -1,0 +1,41 @@
+.camera-capture-container {
+    position: relative;
+    width: 100%;
+}
+
+.camera-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+video {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.clue-overlay-image {
+    position: absolute;
+    top: 10px;
+    /* Adjust as needed */
+    right: 10px;
+    /* Adjust as needed */
+    width: 100px;
+    /* Adjust size as needed */
+    opacity: 0.8;
+    /* Slight transparency */
+}
+
+.clue-overlay-text {
+    position: absolute;
+    bottom: 10px;
+    /* Adjust as needed */
+    left: 10px;
+    /* Adjust as needed */
+    font-size: 20px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Transparent background */
+    padding: 5px 10px;
+    border-radius: 5px;
+}

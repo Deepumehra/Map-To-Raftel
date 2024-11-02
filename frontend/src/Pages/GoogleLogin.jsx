@@ -35,7 +35,7 @@ const GoogleLogin = (props) => {
 		<div className="App">
 			<button onClick={googleLogin}>
 				Sign in with Google
-			</button>	
+			</button>
 		</div>
 	);
 };

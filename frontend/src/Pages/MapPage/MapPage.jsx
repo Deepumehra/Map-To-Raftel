@@ -13,7 +13,7 @@
         * lets see
 */
 
-import { AppBar, Box, Container, CssBaseline, Grid, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Container, CssBaseline, Button, Grid, Toolbar, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 // Import components
 import './MapPage.css';
@@ -48,8 +48,12 @@ const MapPage = () => {
         navigator.geolocation.getCurrentPosition(success, error);
     }, []);
 
+    const handleCheckLocation = () => {
+        // the check location functionality will come here
+    };
+
     return (
-        <Container>
+        <div>
             {/* <CssBaseline /> */}
             
             {/* Header */}
@@ -62,7 +66,7 @@ const MapPage = () => {
             </AppBar>
             
             {/* Main Content */}
-            <Grid container spacing={3} sx={{ mt: 3 }}>
+            <Grid container spacing={3} sx={{ mt: 3, paddingBottom: 2}}>
                 
                 {/* Map Section */}
                 <Grid item xs={12} md={8}>
@@ -91,6 +95,7 @@ const MapPage = () => {
                     </Box>
                     <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
                         {/* <CheckLocation/> */}
+                        <Button variant='contained' height='inherit' width='inherit' onClick={handleCheckLocation} >Check Location</Button>
                     </Box>
                 </Grid>
                 
@@ -98,7 +103,7 @@ const MapPage = () => {
             
             {/* Footer */}
             <Footer/>
-        </Container>
+        </div>
     );
 }
 
