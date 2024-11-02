@@ -7,7 +7,7 @@ import Clue from '../../Components/Clue/Clue';
 import SendIcon from '@mui/icons-material/Send';
 import './MapPage.css';
 
-const socket = io('http://your-socket-server-url');
+// const socket = io('http://your-socket-server-url');
 
 const MapPage = () => {
     const [location, setLocation] = useState({ latitude: null, longitude: null });
@@ -17,24 +17,24 @@ const MapPage = () => {
     const [points, setPoints] = useState(0);
     const [currentClue, setCurrentClue] = useState({ clueID: 1, title: "First Clue", message: "Find the tallest tree in the park." });
 
-    useEffect(() => {
-        socket.connect();
+    // useEffect(() => {
+    //     socket.connect();
 
-        socket.on('team-location-update', (locations) => {
-            setTeamLocations(locations);
-        });
+    //     socket.on('team-location-update', (locations) => {
+    //         setTeamLocations(locations);
+    //    });
 
-        socket.on('new-chat-message', (msg) => {
-            setChatMessages(prevMessages => [...prevMessages, msg]);
-        });
+    //     socket.on('new-chat-message', (msg) => {
+    //         setChatMessages(prevMessages => [...prevMessages, msg]);
+    //     });
 
-        socket.on('clue-update', (newClue) => {
-            setCurrentClue(newClue);
-            setPoints(prevPoints => prevPoints + 1);
-        });
+    //     socket.on('clue-update', (newClue) => {
+    //         setCurrentClue(newClue);
+    //         setPoints(prevPoints => prevPoints + 1);
+    //     });
 
-        return () => socket.disconnect();
-    }, []);
+    //     return () => socket.disconnect();
+    // }, []);
 
     useEffect(() => {
         if (navigator.geolocation) {

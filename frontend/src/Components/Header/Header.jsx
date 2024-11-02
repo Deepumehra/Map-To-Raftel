@@ -41,6 +41,7 @@ const Header = () => {
 
     const handleHuntClicked = () => {
         // take user to pre-defined hunt page where he can participate in a hunt
+        navigate('/hunts');
         handleCloseNavMenu();
     };
 

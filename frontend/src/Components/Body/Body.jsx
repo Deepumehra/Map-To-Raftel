@@ -7,7 +7,7 @@ const MainPageBody = () => {
             {/* Hero Section */}
             <Box sx={{ textAlign: 'center', paddingY: 6, position: 'relative' }}>
                 <Typography variant="h2" sx={{ fontWeight: 'bold', mb: 2 }}>
-                    A Better Learning Journey Future Start Here
+                    A Long Way To Go
                 </Typography>
                 <Typography variant="subtitle1" sx={{ maxWidth: '600px', mx: 'auto', mb: 4 }}>
                     Join a global learning community on a treasure hunt to solve the greatest mysteries at landmark locations!
@@ -26,15 +26,15 @@ const MainPageBody = () => {
                     Key Features
                 </Typography>
                 <Grid container spacing={4} justifyContent="center">
-                    {['Exclusive Clues', 'Teams & Collaboration', 'Real-Time Updates', 'Global Leaderboard'].map((feature, index) => (
+                    {[['Exclusive Clues', 'Listen carefully to the wind whisper unscramble the letters to find the treasures litter'], ['Teams & Collaboration', 'Each Member Holds a Piece Assemble The Puzzle To Proceed'], ['Real-Time Updates', 'Update!!! New Obstacles To Overcome Alert!!! Time-Sensitive Challenge Ahead'], ['Global Leaderboard', 'Rankings Refreshed              Leaderboard Shake-Up         Treasure Hunt Standings']].map((feature, index) => (
                         <Grid item xs={12} sm={6} md={3} key={index}>
                             <Card sx={{ backgroundColor: '#1b1b2f', color: 'white', height: '100%' }}>
                                 <CardContent>
                                     <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-                                        {feature}
+                                        {feature[0]}
                                     </Typography>
                                     <Typography variant="body2">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.
+                                        {feature[1]}
                                     </Typography>
                                 </CardContent>
                             </Card>

@@ -13,10 +13,15 @@ const Footer = () => {
                     
                     {/* Logo and About Section */}
                     <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant="h6" gutterBottom>CompanyName</Typography>
+                        <Typography variant="h6" gutterBottom>MAP TO RAFTEL</Typography>
                         <Typography variant="body2">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                            Nulla quis lorem ut libero malesuada feugiat.
+                            Quest Masters
+                        </Typography>
+                        <Typography variant="body2">  
+                            Puzzle Pursuits
+                        </Typography>
+                        <Typography variant="body2">     
+                            Uncover The Unknown
                         </Typography>
                     </Grid>
                     
@@ -40,9 +45,9 @@ const Footer = () => {
                     {/* Contact Information Section */}
                     <Grid item xs={12} sm={6} md={3}>
                         <Typography variant="h6" gutterBottom>Contact</Typography>
-                        <Typography variant="body2">123 Main Street, City, Country</Typography>
-                        <Typography variant="body2">Email: info@company.com</Typography>
-                        <Typography variant="body2">Phone: +1 234 567 890</Typography>
+                        <Typography variant="body2"> MNNIT, Prayagraj, India</Typography>
+                        <Typography variant="body2">Email: dr0458571@gmail.com</Typography>
+                        <Typography variant="body2">Phone: +7217452328</Typography>
                     </Grid>
 
                     {/* Newsletter Subscription Section */}
