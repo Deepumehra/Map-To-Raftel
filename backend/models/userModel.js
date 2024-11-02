@@ -3,7 +3,6 @@ const UserSchema=new mongoose.Schema({
     fullName:String,
     email:String,
     password:String,
-    image:String,
     otp:String,
     isVerified:{
         type:Boolean,

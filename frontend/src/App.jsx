@@ -1,13 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import CreateHuntPage from './Pages/CreateHuntPage/CreateHunt';
+import GoogleLogin from './Pages/GoogleLogin';
+import HuntPage from './Pages/HuntsPage/HuntsPage';
+import Login from './Pages/LoginPage/LoginPage';
 import MainPage from './Pages/MainPage/MainPage';
-import CreateHuntPage from './Pages/CreateHuntPage/CreateHunt';  // Assuming you have this component
 import MapPage from './Pages/MapPage/MapPage';
 import PageNotFound from './Pages/PageNotFound/';
 import ProfilePage from './Pages/ProfilePage/Profile';
-import HuntPage from './Pages/HuntsPage/HuntsPage';
+import Signup from './Pages/SignupPage/SignupPage';
 
 function App() {
+  const GoogleWrapper= ()=>(
+		<GoogleOAuthProvider clientId="936397188536-td038qi0a3vi0h12kgipp8lsphq2ianq.apps.googleusercontent.com">
+			<GoogleLogin></GoogleLogin>
+		</GoogleOAuthProvider>
+	)
   return (
     <Router>
       <Routes>
@@ -17,8 +25,9 @@ function App() {
         <Route path="/map" element={<MapPage />} />
         <Route path="/profile" element={<ProfilePage/>}/>
         <Route path='/hunts' element={<HuntPage/>} />
-        
-        {/* Catch-all route for undefined pages */}
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/signup' element={<Signup/>}/>
+        <Route path='/googleLogin' element={<GoogleWrapper/>}/>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>

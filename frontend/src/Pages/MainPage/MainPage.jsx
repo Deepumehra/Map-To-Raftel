@@ -1,7 +1,7 @@
 import React from 'react';
-import Header from '../../Components/Header/Header';
 import MainPageBody from '../../Components/Body/Body';
 import Footer from '../../Components/Footer/Footer';
+import Header from '../../Components/Header/Header';
 import './MainPage.css';
 
 const MainPage = () => {
@@ -15,5 +15,4 @@ const MainPage = () => {
     )
     
 }
-
 export default MainPage;

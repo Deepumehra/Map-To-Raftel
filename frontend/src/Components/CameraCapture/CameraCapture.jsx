@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './CameraCapture.css'; // Custom CSS for styling
 
 const CameraCapture = ({ clueImage, clueText }) => {

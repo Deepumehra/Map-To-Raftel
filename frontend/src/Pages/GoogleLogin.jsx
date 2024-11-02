@@ -15,7 +15,7 @@ const GoogleLogin = (props) => {
 				const obj = {email,name, picture};
 				console.log("User :",obj);
 				localStorage.setItem('user-info',JSON.stringify(obj));
-				navigate('/profile');
+				navigate('/profilePage');
 			} else {
 				console.log("Auth Result :",authResult);
 				throw new Error(authResult);
@@ -30,11 +30,10 @@ const GoogleLogin = (props) => {
 		onError: responseGoogle,
 		flow: "auth-code",
 	});
-
 	return (
-		<div className="App">
+		<div>
 			<button onClick={googleLogin}>
-				Sign in with Google
+				Login with Google
 			</button>
 		</div>
 	);

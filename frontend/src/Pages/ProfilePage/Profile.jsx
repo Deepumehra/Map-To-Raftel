@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { 
-    Container, Box, Avatar, Typography, Button, Grid, Card, TextField, Chip, Dialog, DialogContent, 
-    DialogActions, IconButton, Drawer, List, ListItem, ListItemText 
-} from '@mui/material';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+/* eslint-disable react/prop-types */
 import BadgeIcon from '@mui/icons-material/Badge';
-import CloseIcon from '@mui/icons-material/Close';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import {
+    Avatar,
+    Box,
+    Button,
+    Card,
+    Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Drawer,
+    Grid,
+    IconButton,
+    List, ListItem, ListItemText,
+    TextField,
+    Typography
+} from '@mui/material';
+import { useEffect, useState } from 'react';
 import './Profile.css';
 
 const ProfilePage = ({ userData }) => {

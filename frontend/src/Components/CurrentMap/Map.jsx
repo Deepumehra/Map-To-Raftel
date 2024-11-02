@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import example from '../Assists/example.jpeg';
-import clueImage from '../Assists/clue.jpeg';
+import React from 'react';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import avatarImage from '../Assists/avatar.jpeg';
+import clueImage from '../Assists/clue.jpeg';
+import example from '../Assists/example.jpeg';
 import './Map.css';
 
 // Import the Popup components
+import CluePopup from '../Popups/CluePopup';
 import MyLocationPopup from '../Popups/MyLocation';
 import OtherPeoplePopup from '../Popups/OtherPeoplePopup';
-import CluePopup from '../Popups/CluePopup';
 
 const MNNIT_CENTER = [25.4920, 81.8639];
 const ZOOM_LEVEL = 16;
@@ -23,7 +23,6 @@ const createProfileIcon = (profilePicUrl) => {
         className: 'custom-icon',
     });
 };
-
 const createClueIcon = () => {
     return L.icon({
         iconUrl: clueImage,
