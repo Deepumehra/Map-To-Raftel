@@ -7,6 +7,15 @@ const ClueSchema=new mongoose.Schema({
         select:false
     },
     location:String,
+    coodinates:[{
+        type:String,
+        required:"Coordinates must be required",
+    }],
+    nextClueId:{
+        type:mongoose.Schema.Types,ObjectId,
+        ref:"Clue",
+    },
+    isDestinationReached:Boolean,
     sequenceOrder:Number
 });
 const Clue=mongooose.model("Clue",ClueSchema);

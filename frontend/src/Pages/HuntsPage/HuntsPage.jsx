@@ -7,7 +7,6 @@
     The hunts this pages shows can only be created by the administrator.
     Clues solved from this section are only considered for leaderboard.
 */
-
 const HuntPage = () => {
 
     return (

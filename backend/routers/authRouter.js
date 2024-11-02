@@ -4,7 +4,7 @@ const { googleLogin, register, login, generateOTP, verifyOTP } = require('../con
 
 router.get('/google', googleLogin);
 router.post('/signup', register);
-router.post('/signin', login);
+router.post('/login', login);
 router.post('/request-otp', generateOTP);
 router.post('/verify-otp', verifyOTP);
 

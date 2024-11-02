@@ -1,5 +1,6 @@
 const { oauth2client } = require("../config/googleConfig");
 const User = require('../models/userModel');
+require('dotenv').config();
 const axios = require('axios');
 const bcryptjs = require('bcryptjs');
 const crypto = require('crypto');
@@ -10,26 +11,34 @@ const PasswordResetToken = require("../models/passwordResetToken.js");
 
 const register = async (req, res) => {
     try {
-        let { fullName, email, password, image } = req.body;
+        let { fullName, email, password } = req.body;
         const isUserExist = await User.findOne({ email });
         if (isUserExist) {
-            throw new Error(`User already exists with email: ${email}`);
+            return res.status(400).json({
+                message: `User already exists with email: ${email}`
+            });
         }
+
         password = await bcryptjs.hash(password, 8);
         const user = await User.create({
-            fullName, email, password, image
+            fullName,
+            email,
+            password
         });
+
         const token = generateToken(user._id);
         return res.status(200).json({
             message: "Success",
             token
         });
     } catch (err) {
+        console.error("Error in register function:", err); // This logs the error for debugging
         return res.status(500).json({
             message: "Internal Server Error",
         });
     }
-}
+};
+
 
 const login = async (req, res) => {
     const { password, email } = req.body;
@@ -44,10 +53,10 @@ const login = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid password" });
         }
-        const jwt = generateToken(user._id);
+        const token = generateToken(user._id);
         return res.status(200).json({
             message: "Login Success",
-            jwt
+            token,
         });
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -57,20 +66,48 @@ const login = async (req, res) => {
 const googleLogin = async (req, res) => {
     try {
         const { code } = req.query;
+        
+        // Get token from Google with authorization code
         const googleRes = await oauth2client.getToken(code);
         oauth2client.setCredentials(googleRes.tokens);
+        
+        // Fetch user info from Google API
         const userRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`);
-        const obj = userRes.data;
+        console.log(userRes.data);
+        
+        // Destructure user details from the response
+        const { email, name, picture, verified_email: verifiedEmail } = userRes.data;
+        
+        // Check if user exists
+        let user = await User.findOne({ email });
+        
+        // If user doesn't exist, create a new user
+        if (!user) {
+            user = await User.create({
+                fullName: name,
+                email: email,
+                new: verifiedEmail, // Changed `new` to `verifiedEmail` to avoid errors
+                image: picture,
+            });
+        }
+
+        // Generate a JWT for the user
+        const token = generateToken(user._id);
+
         return res.status(200).json({
             message: 'Success',
-            obj
+            userDetails: user,
+            jwt: token,
+            image: picture,
         });
     } catch (e) {
-        res.status(500).json({
-            message: 'Internal Server Error'
+        console.error(e); // Log the error for debugging
+        return res.status(500).json({
+            message: 'Internal Server Error',
         });
     }
-}
+};
+
 
 const generateOTP = async (req, res) => {
     try {

@@ -1,7 +1,10 @@
 const mongoose=require('mongoose');
 const UserSchema=new mongoose.Schema({
     fullName:String,
-    email:String,
+    email:{
+        type:String,
+        unique:true
+    },
     password:String,
     otp:String,
     isVerified:{
