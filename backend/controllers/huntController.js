@@ -99,7 +99,6 @@ exports.solveClue = async (req, res) => {
 
             return res.status(200).json({ message: 'Destination reached! Hunt completed.' });
         }
-
         // Update currentClueIds to the next clue in the hunt
         activeHunt.currentClueIds = currentClue.nextClueId;
         await user.save();
@@ -113,12 +112,19 @@ exports.solveClue = async (req, res) => {
 };
 
 
-exports.getClueById=async(req,res)=>{
+exports.getNextClueById=async(req,res)=>{
     try{
         const clue=await Clue.findById(req.params.id);
+        const nextClueId=clue.nextClueId;
+        if(!nextClueId){
+            res.status(200).json({
+                message:"Treasure is here"
+            })
+        }
+        const nextClue=await Clue.findById(nexrClueId);
         res.status(200).json({
             message:"Clue with id found",
-            clue
+            nextClue,
         })
     }catch(err){
         res.status(500).json({
