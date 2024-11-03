@@ -1,5 +1,6 @@
-import { AppBar, Box, Button, Grid, Toolbar, Typography, TextField, IconButton } from '@mui/material';
+import { AppBar, Box, Button, Grid, Toolbar, Typography, TextField, IconButton, MenuItem, Menu } from '@mui/material';
 import { useEffect, useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
 import {io} from 'socket.io-client';
 import Map from '../../Components/CurrentMap/Map';
 import Footer from '../../Components/Footer/Footer';
@@ -15,7 +16,9 @@ const MapPage = () => {
     const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [points, setPoints] = useState(0);
+    const [clueSolved, setClueSolved] = useState(0);
     const [currentClue, setCurrentClue] = useState({ clueID: 1, title: "First Clue", message: "Find the tallest tree in the park." });
+    const [anchorElNav, setAnchorElNav] = useState(null);
 
     // useEffect(() => {
     //     socket.connect();
@@ -47,6 +50,14 @@ const MapPage = () => {
         }
     }, []);
 
+    const handleOpenNavMenu = (event) => {
+        setAnchorElNav(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
+    };
+
     const handleCheckLocation = () => {
         socket.emit('check-location', location, (response) => {
             if (response.success) {
@@ -69,6 +80,43 @@ const MapPage = () => {
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                         Treasure Hunt
                     </Typography>
+                    <Box sx={{display: {md: 'flex', xs: 'none'}}}>
+                        <Typography variant="h6" sx={{ flexGrow: 1, m: 2}}>
+                            Clues Solved: {clueSolved}
+                        </Typography>
+                        <Typography variant="h6" sx={{ flexGrow: 1, m: 2}}>
+                            Points: {points}
+                        </Typography>
+                    </Box>
+                    <Box sx={{display: {md: 'none', xs: 'flex'}}}>
+                    <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleOpenNavMenu}
+                            color="inherit"
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                            keepMounted
+                            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
+                            sx={{ display: { xs: 'block', md: 'none' } }}
+                        >
+                            <MenuItem key="clue-solved">
+                                <Typography sx={{ textAlign: 'center' }}>Clues Solved: {clueSolved} </Typography>
+                            </MenuItem>
+                            <MenuItem key="point">
+                                <Typography sx={{ textAlign: 'center' }}>Points: {points} </Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
                 </Toolbar>
             </AppBar>
             
