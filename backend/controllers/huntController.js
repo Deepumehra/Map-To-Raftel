@@ -61,32 +61,69 @@ exports.getHuntById = async (req, res) => {
     }
 };
 
-exports.solveClue=async(req,res)=>{
-    try{
-        // getting user details via profile authentication 
-        const user=await User.findById(req.user._id);
-        // getting huntId via parameters in url
-        const huntId=req.params.id;
-        const hunt=await Hunt.findById(huntId);
-        if(!hunt){
-            return res.status(404).json({
-                message:'Invalid Hunt id is provided'
-            })
+exports.solveClue = async (req, res) => {
+    try {
+        // Get user details
+        const user = await User.findById(req.user._id);
+        
+        // Get hunt details
+        const huntId = req.params.id;
+        const hunt = await Hunt.findById(huntId);
+        if (!hunt) {
+            return res.status(404).json({ message: 'Invalid Hunt id provided' });
         }
-        // fetching currentClueId
-        const currentClueId=hunt._id;
-        if(currentClueId.isDestinationReached){
-            user.activeHunts.remove(huntId);
-            user.completedHunts.add(huntId);
+
+        // Locate the active hunt in user's activeHunts array
+        const activeHunt = user.activeHunts.find(h => h.huntId.toString() === huntId);
+        if (!activeHunt) {
+            return res.status(404).json({ message: 'Hunt is not active for this user' });
+        }
+
+        // Fetch current clue
+        const currentClue = await Clue.findById(activeHunt.currentClueIds);
+        if (!currentClue) {
+            return res.status(404).json({ message: 'Clue not found' });
+        }
+
+        // Check if this clue is the destination
+        if (currentClue.isDestinationReached) {
+            // Remove hunt from active hunts
+            user.activeHunts = user.activeHunts.filter(hunt => hunt.huntId.toString() !== huntId);
+            
+            // Add hunt to completed hunts with completion date
+            user.completedHunts.push({
+                huntId: huntId,
+                completionDate: new Date(),
+            });
             await user.save();
+
+            return res.status(200).json({ message: 'Destination reached! Hunt completed.' });
         }
-        const clue=await Clue.findById(currentClueId);
-        hunt.nextClueId=clue.nextClueId;
-        await hunt.save();
-    }catch(error){
-        res.status(404).json({
-            message:error.message,
+
+        // Update currentClueIds to the next clue in the hunt
+        activeHunt.currentClueIds = currentClue.nextClueId;
+        await user.save();
+
+        res.status(200).json({ message: 'Clue solved! Proceed to the next clue.', nextClueId: currentClue.nextClueId });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message,
+        });
+    }
+};
+
+
+exports.getClueById=async(req,res)=>{
+    try{
+        const clue=await Clue.findById(req.params.id);
+        res.status(200).json({
+            message:"Clue with id found",
+            clue
         })
+    }catch(err){
+        res.status(500).json({
+            message: err.message,
+        });
     }
 }
 

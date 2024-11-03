@@ -5,4 +5,5 @@ router.post('/create',createHunt);
 router.get('/:id',getHuntById);
 router.put('/:id/solve-clue',solveClue);
 router.get('/getHunts',getAllHunts);
+router.get('/:id/getClueById',getClueById);
 module.exports=router;

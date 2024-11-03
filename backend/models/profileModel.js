@@ -17,18 +17,35 @@ const UserSchema=new mongooose.Schema({
         enum:['USER','ADMIN'],
         default:'ADMIN'
     },
-    completedHunts:[{
-        huntId:{
-          type:mongoose.Schema.Types,ObjectId,
-        ref:"Hunt",
+    completedHunts: [{
+        huntId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Hunt',
+            required: true,
+        },
+        completionDate: {
+            type: Date,
+            default: Date.now,
         },
     }],
-    activeHunts:[{
-      huntId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Hunt', 
-        required: true,
-      },
+    activeHunts: [{
+        huntId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Hunt',
+            required: true,
+        },
+        startClueId:{
+          type:mongoose.Schema.Types.ObjectId,
+          ref:'Clue',
+        },
+        currentClueIds: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Clue'
+        },
+        startDate: {
+            type: Date,
+            default: Date.now,
+        }
     }],
     phoneNumber: {
       type: String,
