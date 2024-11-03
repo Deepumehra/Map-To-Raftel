@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-vars */
 import axios from 'axios';
+import { api } from '../../Helper/api';
 import {
+    GET_USER_FAILURE,
+    GET_USER_REQUEST,
+    GET_USER_SUCCESS,
     LOGIN_FAILURE,
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
@@ -14,11 +18,12 @@ export const registerUser=(reqData)=>async(dispatch)=>{
     try{
         dispatch({type:REGISTER_REQUEST});
         const {data}=await axios.post(`http://localhost:5454/auth/signup`,reqData.userData);
-        if(data.jwt){
-            localStorage.setItem("JWT",data.jwt);
+        console.log("Data :",data);
+        if(data.token){
+            localStorage.setItem("JWT",data.token);
         }
         reqData.navigate('/profile');
-        dispatch({type:REGISTER_SUCCESS,payload:data.jwt});
+        dispatch({type:REGISTER_SUCCESS,payload:data.token});
     }catch(error){
         console.log("catch error ------ ",error)
         dispatch({
@@ -34,11 +39,12 @@ export const loginUser=(reqData)=>async(dispatch)=>{
     try{
         dispatch({type:LOGIN_REQUEST});
         const {data}=await axios.post(`http://localhost:5454/auth/login`,reqData.data);
+        console.log(data)
         if(data.jwt){
-            localStorage.setItem("JWT",data.jwt);
+            localStorage.setItem("JWT",data.token);
         }
         reqData.navigate('/');
-        dispatch({type:LOGIN_SUCCESS,payload:data.jwt});
+        dispatch({type:LOGIN_SUCCESS,payload:data.token});
     }catch(error){
         dispatch({
             type:LOGIN_FAILURE,
@@ -48,12 +54,29 @@ export const loginUser=(reqData)=>async(dispatch)=>{
         })
     }
 }
-export const loginWithGoogle=(reqData)=>async(dispatch)=>{
 
+export const getUser = (token) => {
+    // console.log("Token :",token);
+    return async (dispatch) => {
+        dispatch({ type: GET_USER_REQUEST });
+        try {
+            const response = await api.get(`/auth/user`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+            
+            console.log("Response:", response);
+            const user = response.data.user;
+            dispatch({ type: GET_USER_SUCCESS, payload: user });
+            // console.log("Req User:", user);
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || error.message;
+            dispatch({ type: GET_USER_FAILURE, payload: errorMessage });
+        }
+    }
 }
-export const getUser=(token)=>{
 
-}
 export const resetPasswordRequest=(email)=>async(dispatch)=>{
 
 }

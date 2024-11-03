@@ -5,7 +5,7 @@ const axios = require('axios');
 const bcryptjs = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const { generateToken } = require('../config/jwtProvider.js');
+const { generateToken, getUserIdFromToken } = require('../config/jwtProvider.js');
 const { sendOTPEmail } = require('../utils/sendOTPEmail');
 const PasswordResetToken = require("../models/passwordResetToken.js");
 
@@ -36,6 +36,49 @@ const register = async (req, res) => {
         return res.status(500).json({
             message: "Internal Server Error",
         });
+    }
+};
+const getUserDetails = async (req, res) => {
+    try {
+        console.log("Request headers:", req.headers);
+
+        const authHeader = req.headers.authorization; // lowercase 'authorization'
+        if (!authHeader) {
+            return res.status(401).json({ message: "Authorization header missing" });
+        }
+        console.log("Authorization Header:", authHeader);
+
+        const jwt = authHeader.split(' ')[1];
+        if (!jwt) {
+            return res.status(401).json({ message: "Token missing in authorization header" });
+        }
+
+        let userId;
+        try {
+            userId = getUserIdFromToken(jwt);
+        } catch (error) {
+            console.error("Error extracting userId from token:", error);
+            return res.status(400).json({ message: "Invalid token" });
+        }
+
+        if (!userId) {
+            return res.status(400).json({ message: "Invalid token" });
+        }
+
+        console.log("Extracted userId:", userId);
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({
+            message: "User details",
+            user
+        });
+    } catch (err) {
+        console.error("Error in getUserDetails function:", err);
+        res.status(500).json({ error: err.message || "Internal server error" });
     }
 };
 
@@ -199,4 +242,4 @@ const resetPasswordRequest = async (req, res) => {
     }
 }
 
-module.exports = { googleLogin, register, login,generateOTP, verifyOTP, resetPasswordRequest, resetPassword };
+module.exports = { googleLogin, register, login,generateOTP, verifyOTP, resetPasswordRequest, resetPassword , getUserDetails};

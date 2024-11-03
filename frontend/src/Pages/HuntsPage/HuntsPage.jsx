@@ -11,14 +11,14 @@
 // src/components/HuntPage.js
 // src/components/HuntPage.js
 
-import React from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, IconButton, Divider, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import HuntCard from '../../Components/HuntCard/HuntCard';
-import Header from '../../Components/Header/Header';
-import Footer from '../../Components/Footer/Footer';
+import { Box, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
+import React from 'react';
 import bullet from '../../Components/Assists/bullet.png';
 import roger from '../../Components/Assists/roger.jpeg';
+import Footer from '../../Components/Footer/Footer';
+import Header from '../../Components/Header/Header';
+import HuntCard from '../../Components/HuntCard/HuntCard';
 // import { useSelector } from 'react-redux';
 
 const HuntPage = () => {

@@ -1,5 +1,6 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { Provider } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import CreateHuntPage from './Pages/CreateHuntPage/CreateHunt';
 import GoogleLogin from './Pages/GoogleLogin';
@@ -10,16 +11,23 @@ import MapPage from './Pages/MapPage/MapPage';
 import PageNotFound from './Pages/PageNotFound/';
 import ProfilePage from './Pages/ProfilePage/Profile';
 import Signup from './Pages/SignupPage/SignupPage';
-import store from './State/Store/store';
-
+import { getUser } from './State/Authentication/Action';
 function App() {
   const GoogleWrapper= ()=>(
 		<GoogleOAuthProvider clientId="936397188536-td038qi0a3vi0h12kgipp8lsphq2ianq.apps.googleusercontent.com">
 			<GoogleLogin></GoogleLogin>
 		</GoogleOAuthProvider>
 	)
+  const dispatch=useDispatch();
+  // const {auth}=useSelector((store)=>store);
+  const jwt=localStorage.getItem('JWT');
+  console.log("JWT :",jwt);
+  useEffect(()=>{
+    if(jwt){
+      dispatch(getUser(jwt));
+    }
+  })
   return (
-    <Provider store={store}>
       <Router>
           <Routes>
             {/* Define routes here */}
@@ -34,7 +42,6 @@ function App() {
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </Router>
-    </Provider>
     
   );
 }

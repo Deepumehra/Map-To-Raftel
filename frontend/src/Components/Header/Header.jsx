@@ -12,10 +12,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../../State/Authentication/Action';
 
 const Header = () => {
     const navigate = useNavigate();
+    const dispatch=useDispatch();
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false); 
@@ -23,7 +26,7 @@ const Header = () => {
     // Check for JWT in localStorage on component mount
     useEffect(() => {
         const jwt = localStorage.getItem('JWT');
-        setIsLoggedIn(!jwt);
+        setIsLoggedIn(!!jwt);
     }, []);
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -39,19 +42,21 @@ const Header = () => {
     };
 
     const handleLogin = () => {
+        setIsLoggedIn(true);
         navigate('/login');
     };
 
     const handleLogout = () => {
-        localStorage.clear();
-        setIsLoggedIn(false);
-        navigate('/');
+        dispatch(logout());
+        handleCloseNavMenu();
     };
 
     const handleHuntClicked = () => {
         // take user to pre-defined hunt page where he can participate in a hunt
         navigate('/hunts');
-        handleCloseNavMenu();
+        // handleCloseNavMenu();
+        setIsLoggedIn(false);
+        navigate('/');
     };
 
     const handleCreateClicked = () => {
@@ -61,7 +66,9 @@ const Header = () => {
     const handleCustomeClicked = () => {
         handleCloseNavMenu();
     };
-
+    const navigateToHome=()=>{
+        navigate('/');
+    }
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
@@ -120,7 +127,7 @@ const Header = () => {
                     </Box>
 
                     <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography
+                    <Typography onClick={navigateToHome}
                         variant="h5"
                         noWrap
                         component="a"
