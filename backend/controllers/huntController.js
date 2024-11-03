@@ -1,7 +1,5 @@
 const Hunt = require('../models/huntSchema');  // Import Hunt model
-const Clue = require('../models/clueSchema')
-const Hunt = require('../models/Hunt');  // Import Hunt model
-const Clue = require('../models/Clue');  // Import Clue model
+const Clue = require('../models/clueSchema')// Import Clue model
 const User = require('../models/userModel');
 
 exports.createHunt = async (req, res) => {
