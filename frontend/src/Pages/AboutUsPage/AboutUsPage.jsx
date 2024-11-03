@@ -1,15 +1,12 @@
-import React from "react";
 import {
+    Avatar,
     Box,
-    Typography,
-    Grid,
-    Container,
+    Button,
     Card,
     CardContent,
-    Button,
-    Avatar,
-    Divider,
-    Link,
+    Container,
+    Grid,
+    Typography
 } from "@mui/material";
 import Footer from "../../Components/Footer/Footer";
 import Header from "../../Components/Header/Header";
@@ -160,8 +157,6 @@ const AboutUs = () => {
                     </Grid>
                 </Container>
             </Box>
-
-            {/* Footer Section */}
             <Footer/>
         </Box>
     );

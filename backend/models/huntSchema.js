@@ -1,12 +1,10 @@
 const mongoose=require("mongoose");
 const HuntSchema=new mongoose.Schema({
-    huntId:String,
     title:String,
     description:String,
-    startDate:Date,
-    endDate:Date,
     huntType:{
         enum:['Completed','Active','Untouched'],
+        default:'Active',
         required:'Hunt type must be there',
     },
     status:{
@@ -14,12 +12,19 @@ const HuntSchema=new mongoose.Schema({
         enum:["SOLVED","UNSOLVED","PARTIAL"],
         default:"UNSOLVED",
     },
-    clues:[{
-        type:mongoose.Schema.Types,ObjectId,
-        ref:"Clue",
-    }],
-    totalClues:Number,
-    cluesSolved:Number,
+    currentClueId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'clue',
+    },
+    numberOfPlayersCompleted:{
+        type:Number,
+        default:0,
+    },
+    totalPoints:Number,
+    createdBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Profile",
+    }
 });
 const Hunt=mongoose.model("Hunt",HuntSchema);
 module.exports=Hunt;

@@ -2,6 +2,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import AboutUs from './Pages/AboutUsPage/AboutUsPage';
 import CreateHuntPage from './Pages/CreateHuntPage/CreateHunt';
 import GoogleLogin from './Pages/GoogleLogin';
 import HuntPage from './Pages/HuntsPage/HuntsPage';
@@ -32,6 +33,7 @@ function App() {
           <Routes>
             {/* Define routes here */}
             <Route path="/" element={<MainPage />} />
+            <Route path='/about' element={<AboutUs/>}/>
             <Route path="/create-hunt" element={<CreateHuntPage />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/profile" element={<ProfilePage/>}/>

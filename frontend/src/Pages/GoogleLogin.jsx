@@ -15,7 +15,9 @@ const GoogleLogin = (props) => {
 				localStorage.setItem('user-info',JSON.stringify(userDetails));
 				localStorage.setItem('image',JSON.stringify(image))
 				localStorage.setItem('JWT',jwt);
-				navigate('/profile');
+				navigate('/profile',{
+					userDetails:obj
+				});
 			} else {
 				console.log("Auth Result :",authResult);
 				throw new Error(authResult);

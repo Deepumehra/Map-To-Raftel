@@ -1,22 +1,19 @@
 const mongoose=require('mongoose');
 const ClueSchema=new mongoose.Schema({
-    clueId:String,
+    title:String,
     description:String,
-    hint:{
-        type:String,
-        select:false
-    },
-    location:String,
-    coodinates:[{
-        type:String,
-        required:"Coordinates must be required",
-    }],
+    startingLat:Number,
+    startingLong:Number,
+    endingLat:Number,
+    endingLong:Number,
     nextClueId:{
-        type:mongoose.Schema.Types,ObjectId,
-        ref:"Clue",
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'clue',
     },
-    isDestinationReached:Boolean,
-    sequenceOrder:Number
+    isDestinationReached:{
+        type:Boolean,
+        default:false,
+    }
 });
-const Clue=mongooose.model("Clue",ClueSchema);
+const Clue=mongoose.model("Clue",ClueSchema);
 module.exports=Clue;

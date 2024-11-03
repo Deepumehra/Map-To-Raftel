@@ -1,7 +1,7 @@
-import React from 'react';
-import { Box, Typography, Button, Grid, Card, CardContent } from '@mui/material';
-
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 const MainPageBody = () => {
+    const navigate=useNavigate();
     return (
         <Box sx={{ backgroundColor: '#0d0d1e', color: 'white', paddingBottom: 8 }}>
             {/* Hero Section */}
@@ -52,10 +52,13 @@ const MainPageBody = () => {
                     <Typography variant="body1" sx={{ mb: 4 }}>
                         Creating a lifelong learning community through challenging treasure hunts that combine fun with education.
                     </Typography>
-                    <Button variant="contained" color="primary" sx={{ mr: 2 }}>
-                        Learn More
-                    </Button>
-                    <Button variant="outlined" color="primary">
+                    <Link to='/about'>
+                        <Button variant="contained" color="primary" sx={{ mr: 2 }}>
+                            Learn More
+                        </Button>
+                    </Link>
+                    
+                    <Button onClick={()=>navigate('/contact')} variant="outlined" color="primary">
                         Contact Us
                     </Button>
                 </Box>

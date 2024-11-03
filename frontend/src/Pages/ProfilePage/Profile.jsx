@@ -14,58 +14,90 @@ import {
     Drawer,
     Grid,
     IconButton,
-    List, ListItem, ListItemText,
+    List,
+    ListItem,
+    ListItemText,
     TextField,
-    Typography
+    Typography,
 } from '@mui/material';
+import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
 import './Profile.css';
 
+// Validation schema using Yup based on Mongoose schema
+const validationSchema = Yup.object().shape({
+    name: Yup.string()
+        .required('User Name is required')
+        .min(5, 'User Name must be at least 5 characters'),
+    phone: Yup.string()
+        .required('Phone number is required')
+        .matches(/^\d{10}$/, 'Phone number must be a 10-digit number.'),
+    bio: Yup.string().optional(),
+    points: Yup.number().optional(),
+    globalRank: Yup.number().optional(),
+    activeHunts: Yup.array()
+        .of(Yup.string())
+        .optional(),
+    badges: Yup.array().of(Yup.string()).optional(),
+    image: Yup.string().optional(), // Optional image validation
+});
+
 const ProfilePage = ({ userData }) => {
-    const [user, setUser] = useState({
-        name: '',
-        phone: '',
-        bio: '',
-        points: 0,
-        globalRank: 0,
-        badges: ["Top Solver", "Explorer", "Team Player"],
-        activeHunts: ["Treasure Hunt at Museum", "Outdoor Park Adventure"],
-        completedHunts: 10,
-        isNewUser: true,
-    });
-    const [isFormValid, setIsFormValid] = useState(false);
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [sidePaneOpen, setSidePaneOpen] = useState(false);
-    const [profileImage, setProfileImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
+    const jwt = localStorage.getItem('JWT');
+    console.log("JWT :", jwt);
+
+    // Formik setup
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            phone: '',
+            bio: '',
+            points: 0,
+            globalRank: 0,
+            badges: ["Top Solver", "Explorer", "Team Player"],
+            activeHunts: ["Treasure Hunt at Museum", "Outdoor Park Adventure"],
+            completedHunts: 10,
+            image: null, // Include image in initial values
+        },
+        validationSchema,
+        onSubmit: (values) => {
+            console.log("User Data Saved:", values);
+            // Save the profile image to localStorage
+            if (values.image) {
+                localStorage.setItem('image', values.image); // Store image in localStorage
+            }
+        },
+        enableReinitialize: true,
+    });
+
+    useEffect(() => {
+        // Load existing image from localStorage on mount
+        const storedImage = localStorage.getItem('image'); 
+        if (storedImage) {
+            setPreviewImage(storedImage); // Set the preview image to what is in localStorage
+            formik.setFieldValue('image', storedImage); // Set the field value for image in Formik
+        }
+    }, []);
 
     useEffect(() => {
         if (userData) {
-            setUser({ ...userData, isNewUser: false });
+            formik.setValues({ ...userData });
         }
     }, [userData]);
 
-    useEffect(() => {
-        setIsFormValid(!!user.name && !!user.phone);
-    }, [user.name, user.phone]);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setUser((prevUser) => ({ ...prevUser, [name]: value }));
-    };
-
-    const handleSave = () => {
-        console.log("User Data Saved:", user);
-        setUser((prevUser) => ({ ...prevUser, isNewUser: false }));
-    };
-
-    // Handle Profile Image Upload
+    // Profile Image Upload
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
+
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                setPreviewImage(reader.result);
+                setPreviewImage(reader.result); // Set the preview image
+                formik.setFieldValue('image', reader.result); // Set the image in formik
                 setUploadDialogOpen(true);
             };
             reader.readAsDataURL(file);
@@ -73,7 +105,6 @@ const ProfilePage = ({ userData }) => {
     };
 
     const confirmImageUpload = () => {
-        setProfileImage(previewImage);
         setUploadDialogOpen(false);
     };
 
@@ -82,16 +113,16 @@ const ProfilePage = ({ userData }) => {
             {/* Header Section with Avatar and Bio */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar src={profileImage || "/path/to/default-avatar.jpg"} sx={{ width: 80, height: 80 }} />
+                    <Avatar src={previewImage || "/path/to/default-avatar.jpg"} sx={{ width: 80, height: 80 }} />
                     <Box>
-                        <Typography variant="h6">{user.name || "Your Name"}</Typography>
+                        <Typography variant="h6">{formik.values.name || "Your Name"}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                            Rank: {user.globalRank} | Points: {user.points}
+                            Rank: {formik.values.globalRank} | Points: {formik.values.points}
                         </Typography>
                     </Box>
                     <IconButton component="label" size="small">
                         <PhotoCamera />
-                        <input hidden type="file" onChange={handleImageUpload} />
+                        <input hidden type="file" accept="image/*" onChange={handleImageUpload} />
                     </IconButton>
                 </Box>
                 <Button onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
@@ -105,24 +136,22 @@ const ProfilePage = ({ userData }) => {
                     rows={3}
                     label="About Me"
                     name="bio"
-                    value={user.bio}
-                    onChange={handleInputChange}
+                    value={formik.values.bio}
+                    onChange={formik.handleChange}
                     placeholder="Tell us a little about yourself..."
                 />
             </Box>
-
-            {/* Mandatory Fields for New Users */}
             <Grid container spacing={2} sx={{ mt: 2 }}>
                 <Grid item xs={6}>
                     <TextField
                         fullWidth
-                        label="Name"
+                        label="User Name"
                         name="name"
-                        value={user.name}
-                        onChange={handleInputChange}
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
                         required
-                        error={!user.name && !isFormValid}
-                        helperText={!user.name && !isFormValid ? "Name is required" : ""}
+                        error={formik.touched.name && Boolean(formik.errors.name)}
+                        helperText={formik.touched.name && formik.errors.name}
                     />
                 </Grid>
                 <Grid item xs={6}>
@@ -130,11 +159,11 @@ const ProfilePage = ({ userData }) => {
                         fullWidth
                         label="Phone Number"
                         name="phone"
-                        value={user.phone}
-                        onChange={handleInputChange}
+                        value={formik.values.phone}
+                        onChange={formik.handleChange}
                         required
-                        error={!user.phone && !isFormValid}
-                        helperText={!user.phone && !isFormValid ? "Phone number is required" : ""}
+                        error={formik.touched.phone && Boolean(formik.errors.phone)}
+                        helperText={formik.touched.phone && formik.errors.phone}
                     />
                 </Grid>
             </Grid>
@@ -144,12 +173,12 @@ const ProfilePage = ({ userData }) => {
                 <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
                     <LeaderboardIcon color="primary" />
                     <Typography variant="h6">Total Hunts</Typography>
-                    <Typography variant="h4">{user.completedHunts}</Typography>
+                    <Typography variant="h4">{formik.values.completedHunts}</Typography>
                 </Card>
                 <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
                     <BadgeIcon color="secondary" />
                     <Typography variant="h6">Badges</Typography>
-                    <Typography variant="h4">{user.badges.length}</Typography>
+                    <Typography variant="h4">{formik.values.badges.length}</Typography>
                 </Card>
             </Box>
 
@@ -158,8 +187,8 @@ const ProfilePage = ({ userData }) => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleSave}
-                    disabled={!isFormValid}
+                    onClick={formik.handleSubmit}
+                    disabled={!formik.isValid}
                 >
                     Save Profile
                 </Button>
@@ -181,7 +210,7 @@ const ProfilePage = ({ userData }) => {
                 <Box width={250} p={2}>
                     <Typography variant="h6">Active Hunts</Typography>
                     <List>
-                        {user.activeHunts.map((hunt, index) => (
+                        {formik.values.activeHunts.map((hunt, index) => (
                             <ListItem key={index}>
                                 <ListItemText primary={hunt} />
                             </ListItem>
@@ -189,7 +218,7 @@ const ProfilePage = ({ userData }) => {
                     </List>
                     <Typography variant="h6" sx={{ mt: 2 }}>Achievements</Typography>
                     <List>
-                        {user.badges.map((badge, index) => (
+                        {formik.values.badges.map((badge, index) => (
                             <ListItem key={index}>
                                 <BadgeIcon sx={{ color: '#ff9800', fontSize: 20, mr: 1 }} />
                                 <ListItemText primary={badge} />
