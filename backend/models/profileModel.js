@@ -4,8 +4,10 @@ const UserSchema=new mongooose.Schema({
         type:String,
         required:[true,'User Name is required'],
         minlength:[5,'User Name  must be atleast 5 characters'],
-        trim:true
+        trim:true,
+        unique:true,
     },
+<<<<<<< HEAD
     fullName: {
       type: String,
       required: [true, 'Full name is required'],
@@ -28,12 +30,39 @@ const UserSchema=new mongooose.Schema({
       required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters'],
       select: false, 
+=======
+    userDetails:{
+      type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', 
+        required: true,
+>>>>>>> 9fbe34dca9cbb7615cbce654bab4644562689ecb
     },
     userType:{
         type:String,
         enum:['USER','ADMIN'],
         default:'ADMIN'
-    }
+    },
+    completedHunts:[{
+        huntId:{
+          type:mongoose.Schema.Types,ObjectId,
+        ref:"Hunt",
+        },
+    }],
+    activeHunts:[{
+      huntId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Hunt', 
+        required: true,
+      },
+      solvedClueIds: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Clue',
+        }
+      ],
+      totalClues:Number,
+      numberOfolvedClues:Number
+    }]
 })
 const Profile=mongoose.model('Profile',UserSchema);
 module.exports=Profile;
