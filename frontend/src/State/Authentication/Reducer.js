@@ -59,6 +59,7 @@ const authReducer=(state=initialState,action)=>{
             return { ...state, jwt: null, user: null, success: "logout success" };
         case SAVE_PROFILE_REQUEST:
         case SAVE_PROFILE_SUCCESS:
+            console.log("Profile :",action.payload);
             return {
                 ...state,
                 profile:action.payload,

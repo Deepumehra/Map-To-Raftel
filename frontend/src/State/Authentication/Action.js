@@ -70,8 +70,8 @@ export const saveProfile=(reqData)=>{
                     authorization: `Bearer ${jwt}`
                 },
             })
-            console.log("Response :",response.data);
-            dispatch({type:SAVE_PROFILE_SUCCESS,payload:response.data.profileData});
+            console.log("Response :",response.data.profile);
+            dispatch({type:SAVE_PROFILE_SUCCESS,payload:response.data.profile});
         }catch(error){
             const errorMessage = error.response?.data?.error || error.message;
             dispatch({ type: SAVE_PROFILE_FAILURE, payload: errorMessage });
