@@ -16,59 +16,74 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../State/Authentication/Action';
 
-const Header = () => {
+const Header = (props) => {
     const navigate = useNavigate();
     const dispatch=useDispatch();
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // Check for JWT in localStorage on component mount
     useEffect(() => {
         const jwt = localStorage.getItem('JWT');
         setIsLoggedIn(!!jwt);
     }, []);
+
+    // opens the navigation menu
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
+
+    // opens the user menu
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
+
+    // closes the navigation menu
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
+
+    // closes the user menu
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
 
+    // handle the login 
     const handleLogin = () => {
         setIsLoggedIn(true);
         navigate('/login');
     };
 
+    // handle the logout
     const handleLogout = () => {
         dispatch(logout());
         handleCloseNavMenu();
     };
 
+    // handle the hunt navigation clicked
     const handleHuntClicked = () => {
+            navigate('/hunts');
         // take user to pre-defined hunt page where he can participate in a hunt
-        navigate('/hunts');
-        // handleCloseNavMenu();
-        setIsLoggedIn(false);
-        navigate('/');
-    };
-
-    const handleCreateClicked = () => {
         handleCloseNavMenu();
     };
 
+    // handle the create navigation clicked
+    const handleCreateClicked = () => {
+        navigate('/create-hunt');
+        handleCloseNavMenu();
+    };
+
+    // handle the custom navigation clicked
     const handleCustomeClicked = () => {
         handleCloseNavMenu();
-    };
-    const navigateToHome=()=>{
-        navigate('/');
     }
+
+    // just a comment
+    // const navigateToHome=()=>{
+    //     navigate('/');
+    // }
+
     return (
         <AppBar position="static">
             <Container maxWidth="xl">
@@ -127,7 +142,7 @@ const Header = () => {
                     </Box>
 
                     <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography onClick={navigateToHome}
+                    <Typography
                         variant="h5"
                         noWrap
                         component="a"
