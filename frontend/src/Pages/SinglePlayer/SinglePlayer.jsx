@@ -1,16 +1,13 @@
 import { AppBar, Box, Button, Grid, Toolbar, Typography, TextField, IconButton, MenuItem, Menu } from '@mui/material';
 import { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import {io} from 'socket.io-client';
 import Map from '../../Components/CurrentMap/Map';
 import Footer from '../../Components/Footer/Footer';
 import Clue from '../../Components/Clue/Clue';
 import SendIcon from '@mui/icons-material/Send';
-import './MapPage.css';
+import './SinglePlayer.css';
 
-// const socket = io('http://your-socket-server-url');
-
-const MapPage = () => {
+const SinglePlayer = () => {
     const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [teamLocations, setTeamLocations] = useState([]);
     const [chatMessages, setChatMessages] = useState([]);
@@ -19,25 +16,6 @@ const MapPage = () => {
     const [clueSolved, setClueSolved] = useState(0);
     const [currentClue, setCurrentClue] = useState({ clueID: 1, title: "First Clue", message: "Find the tallest tree in the park." });
     const [anchorElNav, setAnchorElNav] = useState(null);
-
-    // useEffect(() => {
-    //     socket.connect();
-
-    //     socket.on('team-location-update', (locations) => {
-    //         setTeamLocations(locations);
-    //    });
-
-    //     socket.on('new-chat-message', (msg) => {
-    //         setChatMessages(prevMessages => [...prevMessages, msg]);
-    //     });
-
-    //     socket.on('clue-update', (newClue) => {
-    //         setCurrentClue(newClue);
-    //         setPoints(prevPoints => prevPoints + 1);
-    //     });
-
-    //     return () => socket.disconnect();
-    // }, []);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -123,30 +101,7 @@ const MapPage = () => {
             <Grid container spacing={3} sx={{ mt: 3, paddingBottom: 2 }}>
                 <Grid item xs={12} md={8}>
                     <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2, height: '70vh' }}>
-                        <Map mask='multi' liveLocationMarkers={teamLocations} myLocation={location} />
-                    </Box>
-                    <Box sx={{ mt: 3, p: 2, border: '1px solid #ccc', borderRadius: 2, maxHeight: '50vh', overflowY: 'auto' }}>
-                        <Typography variant="h6">Team Chat</Typography>
-                        <Box>
-                            {chatMessages.map((msg, index) => (
-                                <Box key={index} sx={{ mb: 1, p: 1, bgcolor: '#f1f1f1', borderRadius: 2 }}>
-                                    <Typography variant="body2">{msg}</Typography>
-                                </Box>
-                            ))}
-                        </Box>
-                        <Box display="flex" mt={1}>
-                            <TextField
-                                variant="outlined"
-                                fullWidth
-                                size="small"
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Type a message..."
-                            />
-                            <IconButton color="primary" onClick={sendMessage}>
-                                <SendIcon />
-                            </IconButton>
-                        </Box>
+                        <Map mask='single' liveLocationMarkers={teamLocations} myLocation={location} />
                     </Box>
                 </Grid>
 
@@ -165,4 +120,4 @@ const MapPage = () => {
     );
 };
 
-export default MapPage;
+export default SinglePlayer;

@@ -13,6 +13,7 @@ import PageNotFound from './Pages/PageNotFound/';
 import ProfilePage from './Pages/ProfilePage/Profile';
 import Signup from './Pages/SignupPage/SignupPage';
 import { getUser } from './State/Authentication/Action';
+import SinglePlayer from './Pages/SinglePlayer/SinglePlayer';
 function App() {
   const GoogleWrapper= ()=>(
 		<GoogleOAuthProvider clientId="936397188536-td038qi0a3vi0h12kgipp8lsphq2ianq.apps.googleusercontent.com">
@@ -40,6 +41,7 @@ function App() {
             <Route path='/hunts' element={<HuntPage/>} />
             <Route path='/login' element={<Login/>}/>
             <Route path='/signup' element={<Signup/>}/>
+            <Route path='/map/:huntid' element={<SinglePlayer/>} />
             <Route path='/googleLogin' element={<GoogleWrapper/>}/>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

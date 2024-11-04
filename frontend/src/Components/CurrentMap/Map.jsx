@@ -39,7 +39,8 @@ const createMeIcon = () => {
     });
 };
 
-const Map = ({ liveLocationMarkers, clueMarkers, myLocation }) => {
+const Map = ({mask, liveLocationMarkers, clueMarkers, myLocation }) => {
+
     return (
         <MapContainer center={MNNIT_CENTER} zoom={ZOOM_LEVEL} style={{ height: '100%', width: '100%' }}>
             <TileLayer
@@ -48,7 +49,7 @@ const Map = ({ liveLocationMarkers, clueMarkers, myLocation }) => {
             />
 
             {/* Live Location Markers */}
-            {liveLocationMarkers.map((marker) => (
+            {mask == 'multi'? liveLocationMarkers.map((marker) => (
                 <Marker
                     key={marker.userID}
                     position={[marker.latitude, marker.longitude]}
@@ -58,7 +59,7 @@ const Map = ({ liveLocationMarkers, clueMarkers, myLocation }) => {
                         <OtherPeoplePopup userID={marker.userID} profilePicUrl={marker.profilePicUrl} />
                     </Popup>
                 </Marker>
-            ))}
+            )) : <div></div>}
 
             {/* Clue Markers */}
             {clueMarkers?.map((clue, index) => (
