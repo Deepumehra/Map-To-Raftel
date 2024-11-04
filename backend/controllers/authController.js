@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 const { generateToken, getUserIdFromToken } = require('../config/jwtProvider.js');
 const { sendOTPEmail } = require('../utils/sendOTPEmail');
 const PasswordResetToken = require("../models/passwordResetToken.js");
+const Profile = require("../models/profileModel");
 
 const register = async (req, res) => {
     try {
@@ -105,7 +106,74 @@ const login = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 }
+const saveProfile = async (req, res) => {
+    console.log("Save Profile route reached");
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: "Authorization header missing" });
+        }
+        
+        const jwt = authHeader.split(' ')[1];
+        if (!jwt) {
+            return res.status(401).json({ message: "Token missing in authorization header" });
+        }
 
+        let userId;
+        try {
+            userId = getUserIdFromToken(jwt);
+        } catch (error) {
+            console.error("Error extracting userId from token:", error);
+            return res.status(400).json({ message: "Invalid token" });
+        }
+
+        if (!userId) {
+            return res.status(400).json({ message: "Invalid token" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        console.log("User ID:", userId);
+        console.log("Request Body:", req.body);
+        const { name, phone, bio } = req.body;
+
+        // Validate required fields
+        if (!name || !phone || !bio) {
+            return res.status(400).json({
+                message: "All fields are necessary"
+            });
+        }
+
+        // Create and save the profile
+        const profile = await Profile.create({
+            userName:name,
+            userId:userId,
+            completedHunts:[],
+            activeHunts:[],
+            description:bio,
+            phoneNumber:phone
+        });
+        if(!profile){
+            return res.status(400).json({message:"Profile creation failed"})
+        }
+        console.log("Profile created:", profile);
+
+        // Send success response
+        res.status(200).json({
+            message: "Profile Created Successfully",
+            profile
+        });
+    } catch (err) {
+        // Handle unexpected errors
+        console.error("Error creating profile:", err);
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+    
 const googleLogin = async (req, res) => {
     try {
         const { code } = req.query;
@@ -242,4 +310,4 @@ const resetPasswordRequest = async (req, res) => {
     }
 }
 
-module.exports = { googleLogin, register, login,generateOTP, verifyOTP, resetPasswordRequest, resetPassword , getUserDetails};
+module.exports = { googleLogin, register, login,generateOTP, verifyOTP, resetPasswordRequest, resetPassword , getUserDetails,saveProfile};

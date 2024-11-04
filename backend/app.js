@@ -15,7 +15,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use('/auth',authRouters);
-app.use('/hunt',authenticate,huntRouters);
+app.use('/hunt',huntRouters);
 app.listen(PORT,async ()=>{
     await connectToDB();
     console.log("Server running on port ",PORT)

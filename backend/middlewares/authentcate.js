@@ -9,9 +9,11 @@ const authenticate=async(req,res,next)=>{
             });
         }
         const userId=getUserIdFromToken(token);
+        console.log("User Id :",userId);
         const user=User.findById(userId);
         user.password=null;
         req.user=user;
+        // console.log("User Details :",req.user);
     }catch(err){
         return res.status(500).send({message:err.message})
     }

@@ -12,8 +12,8 @@ import MapPage from './Pages/MapPage/MapPage';
 import PageNotFound from './Pages/PageNotFound/';
 import ProfilePage from './Pages/ProfilePage/Profile';
 import Signup from './Pages/SignupPage/SignupPage';
-import { getUser } from './State/Authentication/Action';
 import SinglePlayer from './Pages/SinglePlayer/SinglePlayer';
+import { getUser } from './State/Authentication/Action';
 function App() {
   const GoogleWrapper= ()=>(
 		<GoogleOAuthProvider clientId="936397188536-td038qi0a3vi0h12kgipp8lsphq2ianq.apps.googleusercontent.com">
@@ -23,7 +23,7 @@ function App() {
   const dispatch=useDispatch();
   // const {auth}=useSelector((store)=>store);
   const jwt=localStorage.getItem('JWT');
-  console.log("JWT :",jwt);
+  // console.log("JWT :",jwt);
   useEffect(()=>{
     if(jwt){
       dispatch(getUser(jwt));

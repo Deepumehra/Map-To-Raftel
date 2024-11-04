@@ -1,10 +1,14 @@
-import { GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_WITH_GOOGLE_REQUEST, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS, REQUEST_RESET_PASSWORD_FAILURE, REQUEST_RESET_PASSWORD_REQUEST, REQUEST_RESET_PASSWORD_SUCCESS, RESET_PASSWORD_REQUEST } from "./ActionType";
+import {
+    GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_WITH_GOOGLE_REQUEST, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS, REQUEST_RESET_PASSWORD_FAILURE, REQUEST_RESET_PASSWORD_REQUEST, REQUEST_RESET_PASSWORD_SUCCESS, RESET_PASSWORD_REQUEST,
+    SAVE_PROFILE_FAILURE,
+    SAVE_PROFILE_REQUEST,
+    SAVE_PROFILE_SUCCESS
+} from "./ActionType";
 
 const initialState={
     user:null,
     isLoading:false,
     error:null,
-    jwt:null,
     success:null,
     profile:null,
     hunts:null
@@ -22,14 +26,12 @@ const authReducer=(state=initialState,action)=>{
             return {
                 ...state,
                 isLoading:false,
-                jwt:action.payload,
                 success:"Register Success",
             };
         case LOGIN_SUCCESS:
             return {
                 ...state,
                 isLoading:false,
-                jwt:action.payload,
                 success:"Login Success",
             }
         case GET_USER_SUCCESS:
@@ -44,6 +46,10 @@ const authReducer=(state=initialState,action)=>{
                 succes:action.payload?.message
             }
         case REGISTER_FAILURE:
+            return {
+                ...state,
+                error:action.payload
+            }
         case LOGIN_FAILURE:
         case GET_USER_FAILURE:
         case REQUEST_RESET_PASSWORD_FAILURE:
@@ -51,9 +57,19 @@ const authReducer=(state=initialState,action)=>{
         case LOGOUT:
             localStorage.removeItem("jwt");
             return { ...state, jwt: null, user: null, success: "logout success" };
+        case SAVE_PROFILE_REQUEST:
+        case SAVE_PROFILE_SUCCESS:
+            return {
+                ...state,
+                profile:action.payload,
+            }
+        case SAVE_PROFILE_FAILURE:
+            return {
+                ...state,
+                error:action.payload
+            }
         default:
-            return state;
-        
+            return state; 
     }
 };
 export default authReducer;

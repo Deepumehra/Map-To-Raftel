@@ -1,9 +1,5 @@
 const mongoose = require('mongoose');
-const UserSchema = new mongooose.Schema({
-    avatarIndex: {
-        type: String,
-        trim: true,
-    },
+const UserSchema = new mongoose.Schema({
     userName: {
         type: String,
         required: [true, 'User Name is required'],
@@ -11,7 +7,7 @@ const UserSchema = new mongooose.Schema({
         trim: true,
         unique: true,
     },
-    userDetails: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
@@ -19,7 +15,7 @@ const UserSchema = new mongooose.Schema({
     userType: {
         type: String,
         enum: ['USER', 'ADMIN'],
-        default: 'ADMIN'
+        default: 'USER'
     },
     completedHunts: [{
         huntId: {
@@ -51,17 +47,12 @@ const UserSchema = new mongooose.Schema({
             default: Date.now,
         }
     }],
+    description:String,
     phoneNumber: {
         type: String,
         required: [true, 'Phone number is required'],
         match: [/^\d{10}$/, 'Phone number must be a 10-digit number.'],
     },
-    totalClues: Number,
-    numberOfolvedClues: Number,
-    badges: [{
-        image: String,
-        title: String,
-    }]
 })
 const Profile = mongoose.model('Profile', UserSchema);
 module.exports = Profile;

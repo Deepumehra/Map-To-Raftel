@@ -1,30 +1,27 @@
 /* eslint-disable react/prop-types */
 import BadgeIcon from '@mui/icons-material/Badge';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
-import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
 import {
     Avatar,
     Box,
     Button,
     Card,
     Container,
-    Dialog,
-    DialogActions,
-    DialogContent,
     Drawer,
     Grid,
-    IconButton,
     List,
     ListItem,
     ListItemText,
     TextField,
-    Typography,
+    Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import './Profile.css';
 import A1 from '../../Components/Avatars/A1.jpeg';
+import A10 from '../../Components/Avatars/A10.jpeg';
 import A2 from '../../Components/Avatars/A2.jpeg';
 import A3 from '../../Components/Avatars/A3.jpeg';
 import A4 from '../../Components/Avatars/A4.jpeg';
@@ -33,8 +30,9 @@ import A6 from '../../Components/Avatars/A6.jpeg';
 import A7 from '../../Components/Avatars/A7.jpeg';
 import A8 from '../../Components/Avatars/A8.jpeg';
 import A9 from '../../Components/Avatars/A9.jpeg';
-import A10 from '../../Components/Avatars/A10.jpeg';
-
+import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
+import { saveProfile } from '../../State/Authentication/Action';
+import './Profile.css';
 const avatars = [
     A1, A2, A3, A4, A5, A6, A7, A8, A9, A10
 ];
@@ -58,39 +56,35 @@ const validationSchema = Yup.object().shape({
 });
 
 const ProfilePage = ({ userData }) => {
+    const dispatch=useDispatch();
+    const navigate=useNavigate();
     const [sidePaneOpen, setSidePaneOpen] = useState(false);
-    const jwt = localStorage.getItem('JWT');
-
     const [openAvatarDialogue, setOpenAvatarDialogue] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState(1);
 
     const handleSelectAvatar = (index) => {
         setSelectedAvatar(index);
         setOpenAvatarDialogue(false);
-    };
-
-    console.log("JWT :", jwt);
-
+    }
     // Formik setup
     const formik = useFormik({
         initialValues: {
-            name: '',
+            username: '',
             phone: '',
             bio: '',
             points: 0,
             globalRank: 0,
             badges: ["Top Solver", "Explorer", "Team Player"],
-            activeHunts: ["Treasure Hunt at Museum", "Outdoor Park Adventure"],
-            completedHunts: 10,
-            image: null, // Include image in initial values
+            activeHunts: [],
+            completedHunts:[],
+            numberOfCompletedHunts: 10,
         },
         validationSchema,
         onSubmit: (values) => {
             console.log("User Data Saved:", values);
             // Save the profile image to localStorage
-            if (values.image) {
-                localStorage.setItem('image', values.image); // Store image in localStorage
-            }
+            dispatch(saveProfile(values));
+            navigate('/');
         },
         enableReinitialize: true,
     });

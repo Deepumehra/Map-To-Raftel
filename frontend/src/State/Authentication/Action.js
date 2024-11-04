@@ -11,10 +11,13 @@ import {
     LOGOUT,
     REGISTER_FAILURE,
     REGISTER_REQUEST,
-    REGISTER_SUCCESS
+    REGISTER_SUCCESS,
+    SAVE_PROFILE_FAILURE,
+    SAVE_PROFILE_REQUEST,
+    SAVE_PROFILE_SUCCESS
 } from "./ActionType";
 export const registerUser=(reqData)=>async(dispatch)=>{
-    console.log("Regsiter Request Data :",reqData.userData);
+    // console.log("Regsiter Request Data :",reqData.userData);
     try{
         dispatch({type:REGISTER_REQUEST});
         const {data}=await axios.post(`http://localhost:5454/auth/signup`,reqData.userData);
@@ -39,10 +42,11 @@ export const loginUser=(reqData)=>async(dispatch)=>{
     try{
         dispatch({type:LOGIN_REQUEST});
         const {data}=await axios.post(`http://localhost:5454/auth/login`,reqData.data);
-        console.log(data)
+        // console.log(data)
         if(data.jwt){
             localStorage.setItem("JWT",data.token);
         }
+
         reqData.navigate('/');
         dispatch({type:LOGIN_SUCCESS,payload:data.token});
     }catch(error){
@@ -54,7 +58,26 @@ export const loginUser=(reqData)=>async(dispatch)=>{
         })
     }
 }
-
+export const saveProfile=(reqData)=>{
+    const jwt=localStorage.getItem('JWT');
+    console.log("jwt :",jwt);
+    return async (dispatch)=>{
+        dispatch({type:SAVE_PROFILE_REQUEST});
+        console.log("Req Data :",reqData)
+        try{
+            const response=await axios.post('http://localhost:5454/auth/save-profile',reqData,{
+                headers: {
+                    authorization: `Bearer ${jwt}`
+                },
+            })
+            console.log("Response :",response.data);
+            dispatch({type:SAVE_PROFILE_SUCCESS,payload:response.data.profileData});
+        }catch(error){
+            const errorMessage = error.response?.data?.error || error.message;
+            dispatch({ type: SAVE_PROFILE_FAILURE, payload: errorMessage });
+        }
+    }
+}
 export const getUser = (token) => {
     // console.log("Token :",token);
     return async (dispatch) => {
@@ -62,7 +85,7 @@ export const getUser = (token) => {
         try {
             const response = await api.get(`/auth/user`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    authorization: `Bearer ${token}`
                 },
             });
             
