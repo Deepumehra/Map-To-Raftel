@@ -39,7 +39,12 @@ const createMeIcon = () => {
     });
 };
 
-const Map = ({mask, liveLocationMarkers, clueMarkers, myLocation }) => {
+const Map = (props) => {
+
+    const mask = props?.mask;
+    const liveLocationMarkers = props?.liveLocationMarkers;
+    const clueMarkers = props?.clueMarkers;
+    const myLocation = props?.myLocation;
 
     return (
         <MapContainer center={MNNIT_CENTER} zoom={ZOOM_LEVEL} style={{ height: '100%', width: '100%' }}>
@@ -69,21 +74,21 @@ const Map = ({mask, liveLocationMarkers, clueMarkers, myLocation }) => {
                     icon={createClueIcon()}
                 >
                     <Popup>
-                        <CluePopup />
+                        <CluePopup clue={clue.ClueData} />
                     </Popup>
                 </Marker>
             ))}
 
             {/* My Location */}
-            <Marker
+            {myLocation.latitude && myLocation.longitude && (<Marker
                 key="my-location"
-                position={[myLocation.latitude ?? 0, myLocation.longitude ?? 0]}
+                position={[myLocation.latitude, myLocation.longitude]}
                 icon={createMeIcon()}
             >
                 <Popup>
                     <MyLocationPopup name="My Profile" />
                 </Popup>
-            </Marker>
+            </Marker>)}
         </MapContainer>
     );
 };

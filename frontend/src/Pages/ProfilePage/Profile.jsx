@@ -78,11 +78,11 @@ const ProfilePage = ({ userData }) => {
             activeHunts: [],
             completedHunts:[],
             numberOfCompletedHunts: 10,
+            avatarIndex: 0,
         },
         validationSchema,
         onSubmit: (values) => {
             console.log("User Data Saved:", values);
-            // Save the profile image to localStorage
             dispatch(saveProfile(values));
             navigate('/');
         },

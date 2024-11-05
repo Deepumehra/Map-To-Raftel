@@ -106,6 +106,7 @@ const login = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 }
+
 const saveProfile = async (req, res) => {
     console.log("Save Profile route reached");
     try {
@@ -154,7 +155,8 @@ const saveProfile = async (req, res) => {
             completedHunts:[],
             activeHunts:[],
             description:bio,
-            phoneNumber:phone
+            phoneNumber:phone,
+            avatarIndex: req.body.avatarIndex? req.body.avatarIndex : 0,
         });
         if(!profile){
             return res.status(400).json({message:"Profile creation failed"})
@@ -173,6 +175,50 @@ const saveProfile = async (req, res) => {
     }
 };
 
+const fetchProfile = async (req, res) => {
+    console.log("Fetch Profile route reached");
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: "Authorization header missing" });
+        }
+        
+        const jwt = authHeader.split(' ')[1];
+        if (!jwt) {
+            return res.status(401).json({ message: "Token missing in authorization header" });
+        }
+
+        let userId;
+        try {
+            userId = getUserIdFromToken(jwt);
+        } catch (error) {
+            console.error("Error extracting userId from token:", error);
+            return res.status(400).json({ message: "Invalid token" });
+        }
+
+        if (!userId) {
+            return res.status(400).json({ message: "Invalid token" });
+        }
+
+        // Fetch user profile based on userId
+        const profile = await Profile.findOne({ userId });
+        if (!profile) {
+            return res.status(404).json({ message: "Profile not found" });
+        }
+
+        console.log("Fetched Profile:", profile);
+
+        // Send the profile data as a response
+        res.status(200).json({
+            message: "Profile fetched successfully",
+            profile
+        });
+    } catch (err) {
+        // Handle unexpected errors
+        console.error("Error fetching profile:", err);
+        return res.status(500).json({ error: err.message });
+    }
+};
     
 const googleLogin = async (req, res) => {
     try {
@@ -310,4 +356,4 @@ const resetPasswordRequest = async (req, res) => {
     }
 }
 
-module.exports = { googleLogin, register, login,generateOTP, verifyOTP, resetPasswordRequest, resetPassword , getUserDetails,saveProfile};
+module.exports = { googleLogin, register, login,generateOTP, verifyOTP, resetPasswordRequest, resetPassword, getUserDetails, saveProfile, fetchProfile};

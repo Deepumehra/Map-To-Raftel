@@ -12,7 +12,7 @@ const Clue = ({ clueID, title, message }) => {
 
     return (
         <Box onClick={handleFlip} sx={{ cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
-            <Card className='clue-card' sx={{ width: '100%', height: '200px' }}>
+            <Card className='clue-card' sx={{ width: '100%', height: '200px', textEmphasis: 'none' }}>
                 {!isFlipped? 
                 /* Front of the card */
                 <Box className="clue-card-front" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

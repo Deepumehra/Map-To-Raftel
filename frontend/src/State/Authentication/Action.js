@@ -14,7 +14,10 @@ import {
     REGISTER_SUCCESS,
     SAVE_PROFILE_FAILURE,
     SAVE_PROFILE_REQUEST,
-    SAVE_PROFILE_SUCCESS
+    SAVE_PROFILE_SUCCESS,
+    FETCH_PROFILE_REQUEST,
+    FETCH_PROFILE_SUCCESS,
+    FETCH_PROFILE_FAILURE,
 } from "./ActionType";
 export const registerUser=(reqData)=>async(dispatch)=>{
     // console.log("Regsiter Request Data :",reqData.userData);
@@ -58,6 +61,7 @@ export const loginUser=(reqData)=>async(dispatch)=>{
         })
     }
 }
+
 export const saveProfile=(reqData)=>{
     const jwt=localStorage.getItem('JWT');
     console.log("jwt :",jwt);
@@ -78,6 +82,31 @@ export const saveProfile=(reqData)=>{
         }
     }
 }
+
+// Action to fetch user profile
+export const fetchProfile = () => {
+    const jwt = localStorage.getItem('JWT');
+    console.log("jwt:", jwt);
+
+    return async (dispatch) => {
+        dispatch({ type: FETCH_PROFILE_REQUEST });
+
+        try {
+            const response = await axios.get('http://localhost:5454/auth/fetch-profile', {
+                headers: {
+                    authorization: `Bearer ${jwt}`
+                },
+            });
+            
+            console.log("Response:", response.data.profile);
+            dispatch({ type: FETCH_PROFILE_SUCCESS, payload: response.data.profile });
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || error.message;
+            dispatch({ type: FETCH_PROFILE_FAILURE, payload: errorMessage });
+        }
+    };
+};
+
 export const getUser = (token) => {
     // console.log("Token :",token);
     return async (dispatch) => {
