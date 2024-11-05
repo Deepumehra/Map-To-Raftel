@@ -50,12 +50,11 @@ export const loginUser=(reqData)=>async(dispatch)=>{
     try{
         dispatch({type:LOGIN_REQUEST});
         const {data}=await axios.post(`http://localhost:5454/auth/login`,reqData.data);
-        // console.log(data)
-        if(data.jwt){
+        console.log(data)
+        if(data.token){
             localStorage.setItem("JWT",data.token);
         }
-
-        reqData.navigate('/');
+        reqData.navigate('/profile');
         dispatch({type:LOGIN_SUCCESS,payload:data.token});
     }catch(error){
         dispatch({
