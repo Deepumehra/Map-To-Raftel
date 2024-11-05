@@ -1,7 +1,9 @@
 import {
     GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_WITH_GOOGLE_REQUEST, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS, REQUEST_RESET_PASSWORD_FAILURE, REQUEST_RESET_PASSWORD_REQUEST, REQUEST_RESET_PASSWORD_SUCCESS, RESET_PASSWORD_REQUEST,
     SAVE_PROFILE_FAILURE, SAVE_PROFILE_REQUEST, SAVE_PROFILE_SUCCESS,
-    FETCH_PROFILE_REQUEST, FETCH_PROFILE_SUCCESS, FETCH_PROFILE_FAILURE // New action types
+    FETCH_PROFILE_REQUEST, FETCH_PROFILE_SUCCESS, FETCH_PROFILE_FAILURE, // New action types
+    UPDATE_PROFILE_SUCCESS,
+    UPDATE_PROFILE_FAILURE
 } from "./ActionType";
 
 const initialState = {
@@ -52,7 +54,10 @@ const authReducer = (state = initialState, action) => {
         case SAVE_PROFILE_FAILURE: // Handle SAVE_PROFILE_FAILURE
         case FETCH_PROFILE_FAILURE: // Handle FETCH_PROFILE_FAILURE
             return { ...state, isLoading: false, error: action.payload };
-
+        case UPDATE_PROFILE_SUCCESS:
+            return { ...state, profile: action.payload, error: null };
+        case UPDATE_PROFILE_FAILURE:
+            return { ...state, error: action.payload };
         case LOGOUT:
             localStorage.removeItem("jwt");
             return { ...state, jwt: null, user: null, profile: null, success: "logout success" };

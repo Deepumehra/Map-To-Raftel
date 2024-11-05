@@ -1,6 +1,5 @@
-/* eslint-disable react/prop-types */
-import { useDispatch, useSelector } from 'react-redux'; // Import useSelector for accessing the profile state
-import { fetchProfile, saveProfile } from '../../State/Authentication/Action';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProfile, saveProfile, updateProfile } from '../../State/Authentication/Action';
 import {
     Avatar, Box, Button, Card, Container, Drawer, Grid, List, ListItem, ListItemText,
     TextField, Typography
@@ -21,14 +20,11 @@ import A7 from '../../Components/Avatars/A7.jpeg';
 import A8 from '../../Components/Avatars/A8.jpeg';
 import A9 from '../../Components/Avatars/A9.jpeg';
 import A10 from '../../Components/Avatars/A10.jpeg';
-// Import all avatar images
 import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
 import './Profile.css';
 
-// Avatar array for selection
 const avatars = [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10];
 
-// Validation schema using Yup
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('User Name is required').min(5, 'User Name must be at least 5 characters'),
     phone: Yup.string().required('Phone number is required').matches(/^\d{10}$/, 'Phone number must be a 10-digit number.'),
@@ -43,56 +39,68 @@ const validationSchema = Yup.object().shape({
 const ProfilePage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { profile, error } = useSelector((state) => state.auth); // Access profile and error state
+    const { profile, error } = useSelector((state) => state.auth);
+
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [bio, setBio] = useState('');
+    const [points, setPoints] = useState(0);
+    const [globalRank, setGlobalRank] = useState(0);
+    const [badges, setBadges] = useState([]);
+    const [activeHunts, setActiveHunts] = useState([]);
+    const [avatarIndex, setAvatarIndex] = useState(0);
+
     const [sidePaneOpen, setSidePaneOpen] = useState(false);
     const [openAvatarDialogue, setOpenAvatarDialogue] = useState(false);
-    const [selectedAvatar, setSelectedAvatar] = useState(1);
 
     useEffect(() => {
-        dispatch(fetchProfile()); // Fetch profile when component mounts
+        dispatch(fetchProfile());
     }, [dispatch]);
 
     useEffect(() => {
         if (profile) {
-            // Populate form with fetched profile data
-            formik.setValues({
-                ...profile,
-                badges: profile.badges || [],
-                activeHunts: profile.activeHunts || [],
-                avatarIndex: profile.avatarIndex || 0,
-            });
-            setSelectedAvatar(profile.avatarIndex || 1);
+            console.log('edited')
+            setName(profile.userName);
+            setPhone(profile.phoneNumber);
+            setBio(profile.description);
+            setPoints(profile.points);
+            setGlobalRank(profile.globalRank);
+            setBadges(profile.badges || []);
+            setActiveHunts(profile.activeHunts);
+            setAvatarIndex(profile.avatarIndex);
         } else if (error) {
-            // If there's an error fetching profile (e.g., new user), let user fill the form
-            formik.resetForm();
+            console.error("Error fetching profile:", error);
         }
     }, [profile, error]);
 
-    // Formik setup
     const formik = useFormik({
         initialValues: {
-            name: '',
-            phone: '',
-            bio: '',
-            points: 0,
-            globalRank: 0,
-            badges: ["Top Solver", "Explorer", "Team Player"],
-            activeHunts: [],
-            completedHunts: [],
-            numberOfCompletedHunts: 10,
-            avatarIndex: 0,
+            name,
+            phone,
+            bio,
+            points,
+            globalRank,
+            badges,
+            activeHunts,
+            avatarIndex,
         },
         validationSchema,
         onSubmit: (values) => {
-            dispatch(saveProfile(values)); // Dispatch saveProfile action
-            navigate('/'); // Navigate after save
+            if(profile === null) {
+                dispatch(saveProfile(values));
+                console.log('profile saved');
+            } else {
+                console.log(values);
+                dispatch(updateProfile(values));
+                console.log('profile updated');
+            }
         },
         enableReinitialize: true,
     });
 
     const handleSelectAvatar = (index) => {
-        setSelectedAvatar(index);
-        formik.setFieldValue('avatarIndex', index); // Update avatar index in form
+        setAvatarIndex(index);
+        formik.setFieldValue('avatarIndex', avatarIndex);
         setOpenAvatarDialogue(false);
     };
 
@@ -102,23 +110,21 @@ const ProfilePage = () => {
                 <Box display="flex" alignItems="center" gap={2}>
                     <Avatar
                         onClick={() => { setOpenAvatarDialogue(true); }}
-                        src={avatars[selectedAvatar - 1]}
+                        src={avatars[avatarIndex]}
                         sx={{ width: 80, height: 80 }}
                     />
                     <Box>
-                        <Typography variant="h6">{formik.values.name || "Your Name"}</Typography>
+                        <Typography variant="h6">{name || "Your Name"}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                            Rank: {formik.values.globalRank} | Points: {formik.values.points}
+                            Rank: {globalRank} | Points: {points}
                         </Typography>
                     </Box>
                 </Box>
                 <Button onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
             </Box>
 
-            {/* Dialogue for avatar selection */}
             <AvatarSelectDialog open={openAvatarDialogue} onClose={() => setOpenAvatarDialogue(false)} onSelect={handleSelectAvatar} />
 
-            {/* Bio Section */}
             <Box sx={{ mt: 2 }}>
                 <TextField
                     fullWidth
@@ -126,8 +132,8 @@ const ProfilePage = () => {
                     rows={3}
                     label="About Me"
                     name="bio"
-                    value={formik.values.bio}
-                    onChange={formik.handleChange}
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell us a little about yourself..."
                 />
             </Box>
@@ -138,8 +144,8 @@ const ProfilePage = () => {
                         fullWidth
                         label="User Name"
                         name="name"
-                        value={formik.values.name}
-                        onChange={formik.handleChange}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                         error={formik.touched.name && Boolean(formik.errors.name)}
                         helperText={formik.touched.name && formik.errors.name}
@@ -150,8 +156,8 @@ const ProfilePage = () => {
                         fullWidth
                         label="Phone Number"
                         name="phone"
-                        value={formik.values.phone}
-                        onChange={formik.handleChange}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                         required
                         error={formik.touched.phone && Boolean(formik.errors.phone)}
                         helperText={formik.touched.phone && formik.errors.phone}
@@ -159,21 +165,19 @@ const ProfilePage = () => {
                 </Grid>
             </Grid>
 
-            {/* Statistics and Achievements */}
             <Box display="flex" gap={2} sx={{ mt: 3 }}>
                 <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
                     <LeaderboardIcon color="primary" />
                     <Typography variant="h6">Total Hunts</Typography>
-                    <Typography variant="h4">{formik.values.completedHunts.length}</Typography>
+                    <Typography variant="h4">{activeHunts.length}</Typography>
                 </Card>
                 <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
                     <BadgeIcon color="secondary" />
                     <Typography variant="h6">Badges</Typography>
-                    <Typography variant="h4">{formik.values.badges.length}</Typography>
+                    <Typography variant="h4">{badges.length}</Typography>
                 </Card>
             </Box>
 
-            {/* Save Button */}
             <Box sx={{ mt: 3, textAlign: 'center' }}>
                 <Button
                     variant="contained"
@@ -185,12 +189,11 @@ const ProfilePage = () => {
                 </Button>
             </Box>
 
-            {/* Side Drawer for Active Hunts and Achievements */}
             <Drawer anchor="right" open={sidePaneOpen} onClose={() => setSidePaneOpen(false)}>
                 <Box width={250} p={2}>
                     <Typography variant="h6">Active Hunts</Typography>
                     <List>
-                        {formik.values.activeHunts.map((hunt, index) => (
+                        {activeHunts.map((hunt, index) => (
                             <ListItem key={index}>
                                 <ListItemText primary={hunt} />
                             </ListItem>
@@ -198,7 +201,7 @@ const ProfilePage = () => {
                     </List>
                     <Typography variant="h6" sx={{ mt: 2 }}>Achievements</Typography>
                     <List>
-                        {formik.values.badges.map((badge, index) => (
+                        {badges.map((badge, index) => (
                             <ListItem key={index}>
                                 <BadgeIcon sx={{ color: '#ff9800', fontSize: 20, mr: 1 }} />
                                 <ListItemText primary={badge} />

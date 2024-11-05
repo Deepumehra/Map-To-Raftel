@@ -18,6 +18,8 @@ import {
     FETCH_PROFILE_REQUEST,
     FETCH_PROFILE_SUCCESS,
     FETCH_PROFILE_FAILURE,
+    UPDATE_PROFILE_SUCCESS,
+    UPDATE_PROFILE_FAILURE,
 } from "./ActionType";
 export const registerUser=(reqData)=>async(dispatch)=>{
     // console.log("Regsiter Request Data :",reqData.userData);
@@ -107,6 +109,19 @@ export const fetchProfile = () => {
     };
 };
 
+export const updateProfile = (profileData) => async (dispatch) => {
+    try {
+        const jwt = localStorage.getItem('JWT');
+        const response = await axios.put('http://localhost:5454/auth/update-profile', profileData, {
+            headers: { Authorization: `Bearer ${jwt}` }
+        });
+        dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: response.data.profile });
+    } catch (error) {
+        dispatch({ type: UPDATE_PROFILE_FAILURE, payload: error.message });
+    }
+};
+
+
 export const getUser = (token) => {
     // console.log("Token :",token);
     return async (dispatch) => {
@@ -132,9 +147,11 @@ export const getUser = (token) => {
 export const resetPasswordRequest=(email)=>async(dispatch)=>{
 
 }
+
 export const resetPassword=(reqData)=>async(dispatch)=>{
 
 }
+
 export const logout=()=>{
     return async(dispatch)=>{
         dispatch({type:LOGOUT});

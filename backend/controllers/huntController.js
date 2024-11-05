@@ -132,4 +132,3 @@ exports.getNextClueById=async(req,res)=>{
         });
     }
 }
-
