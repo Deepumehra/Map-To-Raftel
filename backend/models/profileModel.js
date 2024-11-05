@@ -40,6 +40,17 @@ const UserSchema = new mongoose.Schema({
             type: Date,
             default: Date.now,
         },
+        solvedClues: [{
+            clueId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Clue',
+            },
+            dateSolved: {
+                type: Date,
+                default: Date.now,
+            }
+        }]
+
     }],
     activeHunts: [{
         huntId: {
@@ -51,14 +62,25 @@ const UserSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Clue',
         },
-        currentClueIds: {
+        currentClueId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Clue',
         },
         startDate: {
             type: Date,
             default: Date.now,
-        }
+        },
+        solvedClues: [{
+            clueId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Clue',
+            },
+            dateSolved: {
+                type: Date,
+                default: Date.now,
+            }
+        }]
+
     }],
     description: String,
     phoneNumber: {

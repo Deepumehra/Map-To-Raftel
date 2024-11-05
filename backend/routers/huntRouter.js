@@ -1,9 +1,9 @@
 const express=require('express');
 const router=express.Router();
-const {createHunt,getHuntById,solveClue,getAllHunts,getNextClueById}=require('../controllers/huntController');
+const {createHunt,fetchHuntById,solveClue,getAllHuntsById,fetchClueById}=require('../controllers/huntController');
 router.post('/create',createHunt);
-router.get('/:id',getHuntById);
-router.put('/:id/solve-clue',solveClue);
-router.get('/getHunts',getAllHunts);
-router.get('/:id/getNextClueById',getNextClueById);
+router.get('/fetch-hunt',fetchHuntById);
+router.put('/solve-clue',solveClue);
+router.get('/fetch-clue-by-id',fetchClueById);
+router.get('/getHunts',getAllHuntsById);
 module.exports=router;
