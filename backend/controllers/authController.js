@@ -177,6 +177,7 @@ const saveProfile = async (req, res) => {
 
 const fetchProfile = async (req, res) => {
     console.log("Fetch Profile route reached");
+    console.log(req.headers);
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
@@ -184,10 +185,10 @@ const fetchProfile = async (req, res) => {
         }
         
         const jwt = authHeader.split(' ')[1];
+        console.log("Jwt :",jwt);
         if (!jwt) {
             return res.status(401).json({ message: "Token missing in authorization header" });
         }
-
         let userId;
         try {
             userId = getUserIdFromToken(jwt);
@@ -227,7 +228,6 @@ const updateProfile = async (req, res) => {
         if (!authHeader) {
             return res.status(401).json({ message: "Authorization header missing" });
         }
-        
         const jwt = authHeader.split(' ')[1];
         if (!jwt) {
             return res.status(401).json({ message: "Token missing in authorization header" });
@@ -244,16 +244,23 @@ const updateProfile = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ message: "Invalid token" });
         }
-
+        const updatedFields={
+            userName:req.body.name,
+            description:req.body.bio,
+            phoneNumber:req.body.phone
+        };
+        // console.log("Req Data :",req.body);
         // Update profile data based on userId
         const updatedProfile = await Profile.findOneAndUpdate(
-            req.body,
+            {userId},
+            updatedFields,
             { new: true, runValidators: true }
         );
-
+        console.log("Updated Profile :",updatedProfile);
         if (!updatedProfile) {
             return res.status(404).json({ message: "Profile not found" });
         }
+        await updatedProfile.save();
 
         console.log("Updated Profile:", updatedProfile);
         console.log(updatedProfile);

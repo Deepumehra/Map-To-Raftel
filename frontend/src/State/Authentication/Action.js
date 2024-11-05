@@ -2,6 +2,9 @@
 import axios from 'axios';
 import { api } from '../../Helper/api';
 import {
+    FETCH_PROFILE_FAILURE,
+    FETCH_PROFILE_REQUEST,
+    FETCH_PROFILE_SUCCESS,
     GET_USER_FAILURE,
     GET_USER_REQUEST,
     GET_USER_SUCCESS,
@@ -15,11 +18,8 @@ import {
     SAVE_PROFILE_FAILURE,
     SAVE_PROFILE_REQUEST,
     SAVE_PROFILE_SUCCESS,
-    FETCH_PROFILE_REQUEST,
-    FETCH_PROFILE_SUCCESS,
-    FETCH_PROFILE_FAILURE,
-    UPDATE_PROFILE_SUCCESS,
     UPDATE_PROFILE_FAILURE,
+    UPDATE_PROFILE_SUCCESS,
 } from "./ActionType";
 export const registerUser=(reqData)=>async(dispatch)=>{
     // console.log("Regsiter Request Data :",reqData.userData);
@@ -89,7 +89,6 @@ export const saveProfile=(reqData)=>{
 export const fetchProfile = () => {
     const jwt = localStorage.getItem('JWT');
     console.log("jwt:", jwt);
-
     return async (dispatch) => {
         dispatch({ type: FETCH_PROFILE_REQUEST });
 
@@ -115,6 +114,7 @@ export const updateProfile = (profileData) => async (dispatch) => {
         const response = await axios.put('http://localhost:5454/auth/update-profile', profileData, {
             headers: { Authorization: `Bearer ${jwt}` }
         });
+        console.log("Response :",response.data);
         dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: response.data.profile });
     } catch (error) {
         dispatch({ type: UPDATE_PROFILE_FAILURE, payload: error.message });

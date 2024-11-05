@@ -1,16 +1,16 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProfile, saveProfile, updateProfile } from '../../State/Authentication/Action';
+import BadgeIcon from '@mui/icons-material/Badge';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import {
     Avatar, Box, Button, Card, Container, Drawer, Grid, List, ListItem, ListItemText,
     TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import BadgeIcon from '@mui/icons-material/Badge';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import A1 from '../../Components/Avatars/A1.jpeg';
+import A10 from '../../Components/Avatars/A10.jpeg';
 import A2 from '../../Components/Avatars/A2.jpeg';
 import A3 from '../../Components/Avatars/A3.jpeg';
 import A4 from '../../Components/Avatars/A4.jpeg';
@@ -19,10 +19,9 @@ import A6 from '../../Components/Avatars/A6.jpeg';
 import A7 from '../../Components/Avatars/A7.jpeg';
 import A8 from '../../Components/Avatars/A8.jpeg';
 import A9 from '../../Components/Avatars/A9.jpeg';
-import A10 from '../../Components/Avatars/A10.jpeg';
 import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
+import { fetchProfile, saveProfile, updateProfile } from '../../State/Authentication/Action';
 import './Profile.css';
-
 const avatars = [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10];
 
 const validationSchema = Yup.object().shape({
@@ -71,6 +70,7 @@ const ProfilePage = () => {
         } else if (error) {
             console.error("Error fetching profile:", error);
         }
+        
     }, [profile, error]);
 
     const formik = useFormik({
@@ -103,7 +103,8 @@ const ProfilePage = () => {
         formik.setFieldValue('avatarIndex', avatarIndex);
         setOpenAvatarDialogue(false);
     };
-
+    const {auth}=useSelector((store)=>store)
+    // console.log("Auth :",auth);
     return (
         <Container sx={{ mt: 3, p: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center">
