@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../State/Authentication/Action';
+import Login from '../../Pages/LoginPage/LoginPage';
+import Signup from '../../Pages/SignupPage/SignupPage';
 
 const Header = (props) => {
     const navigate = useNavigate();
@@ -22,6 +24,40 @@ const Header = (props) => {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [loginDialogueOpen, setLoginDialogueOpen] = useState(false);
+    const [signupDialogueOpen, setSignupDialogueOpen] = useState(false);
+    
+    // Open Login dialog from signup page
+    const handleSignupDialogFromLogin = () => {
+        handleCloseLoginDialog();
+        handleOpenSignupDialog();
+    };
+
+    // Open Signup dialog from login page
+    const handleLoginDialogFromSignup = () => {
+        handleCloseSignupDialog();
+        handleOpenLoginDialog();
+    };
+
+    // Open the login dialogue Box
+    const handleOpenLoginDialog = () => {
+        setLoginDialogueOpen(true);
+    };
+
+    // Close the Login dialogue Box
+    const handleCloseLoginDialog = () => {
+        setLoginDialogueOpen(false);
+    };
+
+    // Open the login dialogue Box
+    const handleOpenSignupDialog = () => {
+        setSignupDialogueOpen(true);
+    };
+
+    // Close the Login dialogue Box
+    const handleCloseSignupDialog = () => {
+        setSignupDialogueOpen(false);
+    };
 
     // Check for JWT in localStorage on component mount
     useEffect(() => {
@@ -51,13 +87,13 @@ const Header = (props) => {
 
     // handle the login 
     const handleLogin = () => {
-        setIsLoggedIn(true);
-        navigate('/login');
+        setLoginDialogueOpen(true);
     };
 
     // handle the logout
     const handleLogout = () => {
         dispatch(logout());
+        navigate('/');
         window.location.reload();
         handleCloseNavMenu();
     };
@@ -217,6 +253,8 @@ const Header = (props) => {
                     )}
                 </Toolbar>
             </Container>
+            <Login open={loginDialogueOpen} handleClose={handleCloseLoginDialog} handleSignup={handleSignupDialogFromLogin} />
+            <Signup open={signupDialogueOpen} onClose={handleCloseSignupDialog} handleLogin={handleLoginDialogFromSignup} />
         </AppBar>
     );
 };

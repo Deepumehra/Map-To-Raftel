@@ -13,6 +13,10 @@ const ClueSchema=new mongoose.Schema({
     isDestinationReached:{
         type:Boolean,
         default:false,
+    },
+    points: {
+        type: Number,
+        default: 0
     }
 });
 const Clue=mongoose.model("Clue",ClueSchema);

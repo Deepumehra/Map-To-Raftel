@@ -7,7 +7,7 @@ const HuntSchema=new mongoose.Schema({
         enum:["SOLVED","UNSOLVED","PARTIAL"],
         default:"UNSOLVED",
     },
-    currentClueId:{
+    startClueId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'clue',
     },

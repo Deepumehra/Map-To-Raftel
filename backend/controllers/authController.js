@@ -247,7 +247,8 @@ const updateProfile = async (req, res) => {
         const updatedFields={
             userName:req.body.name,
             description:req.body.bio,
-            phoneNumber:req.body.phone
+            phoneNumber:req.body.phone,
+            avatarIndex: req.body.avatarIndex
         };
         // console.log("Req Data :",req.body);
         // Update profile data based on userId

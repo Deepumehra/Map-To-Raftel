@@ -15,11 +15,6 @@ import Signup from './Pages/SignupPage/SignupPage';
 import SinglePlayer from './Pages/SinglePlayer/SinglePlayer';
 import { getUser } from './State/Authentication/Action';
 function App() {
-  const GoogleWrapper= ()=>(
-		<GoogleOAuthProvider clientId="936397188536-td038qi0a3vi0h12kgipp8lsphq2ianq.apps.googleusercontent.com">
-			<GoogleLogin></GoogleLogin>
-		</GoogleOAuthProvider>
-	)
   const dispatch=useDispatch();
   // const {auth}=useSelector((store)=>store);
   const jwt=localStorage.getItem('JWT');
@@ -30,23 +25,21 @@ function App() {
     }
   })
   return (
-      <Router>
-          <Routes>
-            {/* Define routes here */}
-            <Route path="/" element={<MainPage />} />
-            <Route path='/about' element={<AboutUs/>}/>
-            <Route path="/create-hunt" element={<CreateHuntPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/profile" element={<ProfilePage/>}/>
-            <Route path='/hunts' element={<HuntPage/>} />
-            <Route path='/login' element={<Login/>}/>
-            <Route path='/signup' element={<Signup/>}/>
-            <Route path='/map/:huntid' element={<SinglePlayer/>} />
-            <Route path='/googleLogin' element={<GoogleWrapper/>}/>
-            <Route path="*" element={<PageNotFound />} />
-          </Routes>
-        </Router>
-    
+    <Router>
+        <Routes>
+          {/* Define routes here */}
+          <Route path="/" element={<MainPage />} />
+          <Route path='/about' element={<AboutUs/>}/>
+          <Route path="/create-hunt" element={<CreateHuntPage />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/profile" element={<ProfilePage/>}/>
+          <Route path='/hunts' element={<HuntPage/>} />
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/signup' element={<Signup/>}/>
+          <Route path='/map/:huntid' element={<SinglePlayer/>} />
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </Router>
   );
 }
 

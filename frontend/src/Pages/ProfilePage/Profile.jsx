@@ -22,6 +22,8 @@ import A9 from '../../Components/Avatars/A9.jpeg';
 import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
 import { fetchProfile, saveProfile, updateProfile } from '../../State/Authentication/Action';
 import './Profile.css';
+import Header from '../../Components/Header/Header';
+import Footer from '../../Components/Footer/Footer';
 const avatars = [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10];
 
 const validationSchema = Yup.object().shape({
@@ -106,112 +108,116 @@ const ProfilePage = () => {
     const {auth}=useSelector((store)=>store)
     // console.log("Auth :",auth);
     return (
-        <Container sx={{ mt: 3, p: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar
-                        onClick={() => { setOpenAvatarDialogue(true); }}
-                        src={avatars[avatarIndex]}
-                        sx={{ width: 80, height: 80 }}
-                    />
-                    <Box>
-                        <Typography variant="h6">{name || "Your Name"}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Rank: {globalRank} | Points: {points}
-                        </Typography>
+        <div className='profile-div'>
+            <Header />
+            <Box sx={{m: 5, backgroundColor: '#fff'}} >
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box display="flex" alignItems="center" gap={2}>
+                        <Avatar
+                            onClick={() => { setOpenAvatarDialogue(true); }}
+                            src={avatars[avatarIndex-1]}
+                            sx={{ width: 80, height: 80 }}
+                        />
+                        <Box>
+                            <Typography variant="h6">{name || "Your Name"}</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Rank: {globalRank} | Points: {points}
+                            </Typography>
+                        </Box>
                     </Box>
+                    <Button onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
                 </Box>
-                <Button onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
-            </Box>
 
-            <AvatarSelectDialog open={openAvatarDialogue} onClose={() => setOpenAvatarDialogue(false)} onSelect={handleSelectAvatar} />
+                <AvatarSelectDialog open={openAvatarDialogue} onClose={() => setOpenAvatarDialogue(false)} onSelect={handleSelectAvatar} />
 
-            <Box sx={{ mt: 2 }}>
-                <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    label="About Me"
-                    name="bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Tell us a little about yourself..."
-                />
-            </Box>
-
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid item xs={6}>
+                <Box sx={{ mt: 2 }}>
                     <TextField
                         fullWidth
-                        label="User Name"
-                        name="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        error={formik.touched.name && Boolean(formik.errors.name)}
-                        helperText={formik.touched.name && formik.errors.name}
+                        multiline
+                        rows={3}
+                        label="About Me"
+                        name="bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Tell us a little about yourself..."
                     />
-                </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        label="Phone Number"
-                        name="phone"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                        error={formik.touched.phone && Boolean(formik.errors.phone)}
-                        helperText={formik.touched.phone && formik.errors.phone}
-                    />
-                </Grid>
-            </Grid>
-
-            <Box display="flex" gap={2} sx={{ mt: 3 }}>
-                <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
-                    <LeaderboardIcon color="primary" />
-                    <Typography variant="h6">Total Hunts</Typography>
-                    <Typography variant="h4">{activeHunts.length}</Typography>
-                </Card>
-                <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
-                    <BadgeIcon color="secondary" />
-                    <Typography variant="h6">Badges</Typography>
-                    <Typography variant="h4">{badges.length}</Typography>
-                </Card>
-            </Box>
-
-            <Box sx={{ mt: 3, textAlign: 'center' }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={formik.handleSubmit}
-                    disabled={!formik.isValid}
-                >
-                    Save Profile
-                </Button>
-            </Box>
-
-            <Drawer anchor="right" open={sidePaneOpen} onClose={() => setSidePaneOpen(false)}>
-                <Box width={250} p={2}>
-                    <Typography variant="h6">Active Hunts</Typography>
-                    <List>
-                        {activeHunts.map((hunt, index) => (
-                            <ListItem key={index}>
-                                <ListItemText primary={hunt} />
-                            </ListItem>
-                        ))}
-                    </List>
-                    <Typography variant="h6" sx={{ mt: 2 }}>Achievements</Typography>
-                    <List>
-                        {badges.map((badge, index) => (
-                            <ListItem key={index}>
-                                <BadgeIcon sx={{ color: '#ff9800', fontSize: 20, mr: 1 }} />
-                                <ListItemText primary={badge} />
-                            </ListItem>
-                        ))}
-                    </List>
                 </Box>
-            </Drawer>
-        </Container>
+
+                <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="User Name"
+                            name="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            error={formik.touched.name && Boolean(formik.errors.name)}
+                            helperText={formik.touched.name && formik.errors.name}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="Phone Number"
+                            name="phone"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
+                            error={formik.touched.phone && Boolean(formik.errors.phone)}
+                            helperText={formik.touched.phone && formik.errors.phone}
+                        />
+                    </Grid>
+                </Grid>
+
+                <Box display="flex" gap={2} sx={{ mt: 3 }}>
+                    <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
+                        <LeaderboardIcon color="primary" />
+                        <Typography variant="h6">Total Hunts</Typography>
+                        <Typography variant="h4">{activeHunts.length}</Typography>
+                    </Card>
+                    <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
+                        <BadgeIcon color="secondary" />
+                        <Typography variant="h6">Badges</Typography>
+                        <Typography variant="h4">{badges.length}</Typography>
+                    </Card>
+                </Box>
+
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={formik.handleSubmit}
+                        disabled={!formik.isValid}
+                    >
+                        Save Profile
+                    </Button>
+                </Box>
+
+                <Drawer anchor="right" open={sidePaneOpen} onClose={() => setSidePaneOpen(false)}>
+                    <Box width={250} p={2}>
+                        <Typography variant="h6">Active Hunts</Typography>
+                        <List>
+                            {activeHunts.map((hunt, index) => (
+                                <ListItem key={index}>
+                                    <ListItemText primary={hunt} />
+                                </ListItem>
+                            ))}
+                        </List>
+                        <Typography variant="h6" sx={{ mt: 2 }}>Achievements</Typography>
+                        <List>
+                            {badges.map((badge, index) => (
+                                <ListItem key={index}>
+                                    <BadgeIcon sx={{ color: '#ff9800', fontSize: 20, mr: 1 }} />
+                                    <ListItemText primary={badge} />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Box>
+                </Drawer>
+            </Box>
+            <Footer/>
+        </div>
     );
 };
 

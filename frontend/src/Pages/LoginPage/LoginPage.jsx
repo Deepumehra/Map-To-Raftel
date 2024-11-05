@@ -1,22 +1,50 @@
-import { Box, Button, Link, TextField, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Link, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
+import CloseIcon from '@mui/icons-material/Close';
 import * as Yup from 'yup';
-import { loginUser } from '../../State/Authentication/Action';
+import { loginUser, loginGoogle } from '../../State/Authentication/Action';
+import { googleAuth } from '../../Helper/googleApi';
 import './LoginPage.css';
 
-const Login = () => {
+const Login = ({ open, handleClose, handleSignup }) => {
   const navigate = useNavigate();
-  const dispatch=useDispatch();
-  // Define validation schema using Yup
+  const dispatch = useDispatch();
+
+  // Google Login response handler
+  const responseGoogle = async (authResult) => {
+    try {
+      if (authResult.code) {
+        const result = await googleAuth(authResult.code);
+        const { image, jwt, userDetails } = result.data;
+        dispatch(loginGoogle(userDetails));
+        localStorage.setItem('JWT', jwt);
+        navigate('/profile', { state: { userDetails, image, jwt } });
+      } else {
+        console.log("Auth Result: ", authResult);
+        throw new Error(authResult);
+      }
+    } catch (e) {
+      console.error('Error during Google Login', e);
+    }
+  };
+
+  // Initialize Google login
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: "auth-code",
+  });
+
+  // Form validation schema
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid email address').required('Email is required'),
     password: Yup.string().min(6, 'Password should be at least 6 characters').required('Password is required'),
   });
 
-  // Initialize Formik with initial values, validation schema, and submit handler
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -24,14 +52,13 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log('Form data', values);
-      dispatch(loginUser({data:values,navigate}));
+      dispatch(loginUser({ data: values, navigate }));
+      handleClose();
     },
   });
 
   const styles = {
     googleButton: {
-      margin: '10px 100px',
       display: 'flex',
       alignItems: 'center',
       padding: '10px 15px',
@@ -41,6 +68,7 @@ const Login = () => {
       color: 'white',
       cursor: 'pointer',
       transition: '0.3s',
+      margin: '0 auto',
     },
     googleImage: {
       width: '20px',
@@ -54,68 +82,60 @@ const Login = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="auth-background"></div>
-      <div className="auth-overlay"></div>
-
-      <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8, p: 3 }} className="auth-container">
-        <Typography variant="h5" align="center" gutterBottom>
-          Login
-        </Typography>
-        <form onSubmit={formik.handleSubmit}>
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            margin="normal"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            margin="normal"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.password && Boolean(formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
-          />
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2 }}
-            type="submit"
-          >
-            Login
-          </Button>
-        </form>
-        <p style={{ margin: '10px 180px' }}>OR</p>
-        <Link component="button" onClick={() => navigate('/googleLogin')} style={{ textDecoration: 'none' }}>
-          <button style={styles.googleButton}>
-            <img src='../../../public/Images/google.png' alt="Google Logo" style={styles.googleImage} />
-            <p style={styles.googleText}>Login With Google</p>
-          </button>
-        </Link>
-        <Typography align="center" sx={{ mt: 2 }}>
-          Don’t have an account?{' '}
-          <Link component="button" onClick={() => navigate('/signup')}>
-            Sign up here
-          </Link>
-        </Typography>
-      </Box>
-    </motion.div>
+    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">Login</Typography>
+        <IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close">
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      
+      <DialogContent>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }}>
+          <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              margin="normal"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              margin="normal"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+            />
+            <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }} type="submit">
+              Login
+            </Button>
+          </Box>
+          <Typography align="center" sx={{ mt: 2, fontSize: '14px', color: 'text.secondary' }}>OR</Typography>
+          <Box sx={{ textAlign: 'center', mt: 1 }}>
+            <button style={styles.googleButton} onClick={googleLogin}>
+              <img src='/Images/google.png' alt="Google Logo" style={styles.googleImage} />
+              <p style={styles.googleText}>Login With Google</p>
+            </button>
+          </Box>
+          <Typography align="center" sx={{ mt: 2 }}>
+            Don’t have an account?{' '}
+            <Button component="button" onClick={() => {handleSignup()}}>
+              Sign up here
+            </Button>
+          </Typography>
+        </motion.div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
