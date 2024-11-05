@@ -11,6 +11,9 @@ import {
     LOGIN_FAILURE,
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
+    LOGIN_WITH_GOOGLE_FAILURE,
+    LOGIN_WITH_GOOGLE_REQUEST,
+    LOGIN_WITH_GOOGLE_SUCCESS,
     LOGOUT,
     REGISTER_FAILURE,
     REGISTER_REQUEST,
@@ -121,7 +124,17 @@ export const updateProfile = (profileData) => async (dispatch) => {
     }
 };
 
-
+export const loginGoogle=(userDetails)=>{
+    return async(dispatch)=>{
+        console.log("User Details via google login :",userDetails);
+        dispatch({type:LOGIN_WITH_GOOGLE_REQUEST});
+        try{
+            dispatch({type:LOGIN_WITH_GOOGLE_SUCCESS,payload:userDetails})
+        }catch(error){
+            dispatch({ type: LOGIN_WITH_GOOGLE_FAILURE, payload: error.message });
+        }
+    }
+}
 export const getUser = (token) => {
     // console.log("Token :",token);
     return async (dispatch) => {

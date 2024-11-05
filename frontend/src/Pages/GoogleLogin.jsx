@@ -1,22 +1,22 @@
 /* eslint-disable no-unused-vars */
 import { useGoogleLogin } from '@react-oauth/google';
 import { useState } from "react";
+import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { googleAuth } from '../Helper/googleApi';
+import { loginGoogle } from '../State/Authentication/Action';
 const GoogleLogin = (props) => {
 	const [user, setUser] = useState(null);
-	const navigate = useNavigate();
+	const dispatch=useDispatch();	const navigate = useNavigate();
 	const responseGoogle = async (authResult) => {
 		try {
 			if (authResult["code"]) {
 				const result = await googleAuth(authResult.code);
 				const {image,jwt,userDetails} = result.data;
-				const obj = {userDetails,jwt,image};
-				localStorage.setItem('user-info',JSON.stringify(userDetails));
-				localStorage.setItem('image',JSON.stringify(image))
+				dispatch(loginGoogle(userDetails));
 				localStorage.setItem('JWT',jwt);
 				navigate('/profile',{
-					userDetails:obj
+					userDetails:{userDetails,image,jwt}
 				});
 			} else {
 				console.log("Auth Result :",authResult);
