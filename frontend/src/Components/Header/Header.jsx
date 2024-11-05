@@ -58,6 +58,7 @@ const Header = (props) => {
     // handle the logout
     const handleLogout = () => {
         dispatch(logout());
+        window.location.reload();
         handleCloseNavMenu();
     };
 

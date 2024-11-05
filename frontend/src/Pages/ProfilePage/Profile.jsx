@@ -1,27 +1,17 @@
 /* eslint-disable react/prop-types */
-import BadgeIcon from '@mui/icons-material/Badge';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import { useDispatch, useSelector } from 'react-redux'; // Import useSelector for accessing the profile state
+import { fetchProfile, saveProfile } from '../../State/Authentication/Action';
 import {
-    Avatar,
-    Box,
-    Button,
-    Card,
-    Container,
-    Drawer,
-    Grid,
-    List,
-    ListItem,
-    ListItemText,
-    TextField,
-    Typography
+    Avatar, Box, Button, Card, Container, Drawer, Grid, List, ListItem, ListItemText,
+    TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
+import BadgeIcon from '@mui/icons-material/Badge';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import A1 from '../../Components/Avatars/A1.jpeg';
-import A10 from '../../Components/Avatars/A10.jpeg';
 import A2 from '../../Components/Avatars/A2.jpeg';
 import A3 from '../../Components/Avatars/A3.jpeg';
 import A4 from '../../Components/Avatars/A4.jpeg';
@@ -30,77 +20,91 @@ import A6 from '../../Components/Avatars/A6.jpeg';
 import A7 from '../../Components/Avatars/A7.jpeg';
 import A8 from '../../Components/Avatars/A8.jpeg';
 import A9 from '../../Components/Avatars/A9.jpeg';
+import A10 from '../../Components/Avatars/A10.jpeg';
+// Import all avatar images
 import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
-import { saveProfile } from '../../State/Authentication/Action';
 import './Profile.css';
-const avatars = [
-    A1, A2, A3, A4, A5, A6, A7, A8, A9, A10
-];
 
-// Validation schema using Yup based on Mongoose schema
+// Avatar array for selection
+const avatars = [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10];
+
+// Validation schema using Yup
 const validationSchema = Yup.object().shape({
-    name: Yup.string()
-        .required('User Name is required')
-        .min(5, 'User Name must be at least 5 characters'),
-    phone: Yup.string()
-        .required('Phone number is required')
-        .matches(/^\d{10}$/, 'Phone number must be a 10-digit number.'),
+    name: Yup.string().required('User Name is required').min(5, 'User Name must be at least 5 characters'),
+    phone: Yup.string().required('Phone number is required').matches(/^\d{10}$/, 'Phone number must be a 10-digit number.'),
     bio: Yup.string().optional(),
     points: Yup.number().optional(),
     globalRank: Yup.number().optional(),
-    activeHunts: Yup.array()
-        .of(Yup.string())
-        .optional(),
+    activeHunts: Yup.array().of(Yup.string()).optional(),
     badges: Yup.array().of(Yup.string()).optional(),
     avatarIndex: Yup.number().optional(),
 });
 
-const ProfilePage = ({ userData }) => {
-    const dispatch=useDispatch();
-    const navigate=useNavigate();
+const ProfilePage = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { profile, error } = useSelector((state) => state.auth); // Access profile and error state
     const [sidePaneOpen, setSidePaneOpen] = useState(false);
     const [openAvatarDialogue, setOpenAvatarDialogue] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState(1);
 
-    const handleSelectAvatar = (index) => {
-        setSelectedAvatar(index);
-        setOpenAvatarDialogue(false);
-    }
+    useEffect(() => {
+        dispatch(fetchProfile()); // Fetch profile when component mounts
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (profile) {
+            // Populate form with fetched profile data
+            formik.setValues({
+                ...profile,
+                badges: profile.badges || [],
+                activeHunts: profile.activeHunts || [],
+                avatarIndex: profile.avatarIndex || 0,
+            });
+            setSelectedAvatar(profile.avatarIndex || 1);
+        } else if (error) {
+            // If there's an error fetching profile (e.g., new user), let user fill the form
+            formik.resetForm();
+        }
+    }, [profile, error]);
+
     // Formik setup
     const formik = useFormik({
         initialValues: {
-            username: '',
+            name: '',
             phone: '',
             bio: '',
             points: 0,
             globalRank: 0,
             badges: ["Top Solver", "Explorer", "Team Player"],
             activeHunts: [],
-            completedHunts:[],
+            completedHunts: [],
             numberOfCompletedHunts: 10,
             avatarIndex: 0,
         },
         validationSchema,
         onSubmit: (values) => {
-            console.log("User Data Saved:", values);
-            dispatch(saveProfile(values));
-            navigate('/');
+            dispatch(saveProfile(values)); // Dispatch saveProfile action
+            navigate('/'); // Navigate after save
         },
         enableReinitialize: true,
     });
 
-    useEffect(() => {
-        if (userData) {
-            formik.setValues({ ...userData });
-        }
-    }, [userData]);
+    const handleSelectAvatar = (index) => {
+        setSelectedAvatar(index);
+        formik.setFieldValue('avatarIndex', index); // Update avatar index in form
+        setOpenAvatarDialogue(false);
+    };
 
     return (
         <Container sx={{ mt: 3, p: 3 }}>
-            {/* Header Section with Avatar and Bio */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar onClick={()=>{setOpenAvatarDialogue(true)}} src={avatars[selectedAvatar-1]} sx={{ width: 80, height: 80 }} />
+                    <Avatar
+                        onClick={() => { setOpenAvatarDialogue(true); }}
+                        src={avatars[selectedAvatar - 1]}
+                        sx={{ width: 80, height: 80 }}
+                    />
                     <Box>
                         <Typography variant="h6">{formik.values.name || "Your Name"}</Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -110,8 +114,10 @@ const ProfilePage = ({ userData }) => {
                 </Box>
                 <Button onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
             </Box>
+
             {/* Dialogue for avatar selection */}
-            <AvatarSelectDialog open={openAvatarDialogue} onClose={()=> {setOpenAvatarDialogue(false)}} onSelect={handleSelectAvatar} />
+            <AvatarSelectDialog open={openAvatarDialogue} onClose={() => setOpenAvatarDialogue(false)} onSelect={handleSelectAvatar} />
+
             {/* Bio Section */}
             <Box sx={{ mt: 2 }}>
                 <TextField
@@ -125,6 +131,7 @@ const ProfilePage = ({ userData }) => {
                     placeholder="Tell us a little about yourself..."
                 />
             </Box>
+
             <Grid container spacing={2} sx={{ mt: 2 }}>
                 <Grid item xs={6}>
                     <TextField
@@ -157,7 +164,7 @@ const ProfilePage = ({ userData }) => {
                 <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
                     <LeaderboardIcon color="primary" />
                     <Typography variant="h6">Total Hunts</Typography>
-                    <Typography variant="h4">{formik.values.completedHunts}</Typography>
+                    <Typography variant="h4">{formik.values.completedHunts.length}</Typography>
                 </Card>
                 <Card sx={{ flex: 1, p: 2, textAlign: 'center' }}>
                     <BadgeIcon color="secondary" />
