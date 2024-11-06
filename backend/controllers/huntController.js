@@ -1,8 +1,6 @@
-import Profile from '../models/profileModel';
-
 const Hunt = require('../models/huntSchema');  // Import Hunt model
 const Clue = require('../models/clueSchema')// Import Clue model
-const Profile = require('../models/profileModel');
+const Profile = require('../models/profileModel')
 
 exports.createHunt = async (req, res) => {
     try {
@@ -111,9 +109,9 @@ exports.fetchHuntById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
-};
+}   
 
-export const joinHunt=async(req,res)=>{
+exports.joinHunt=async(req,res)=>{
     try{
         const {profileId,huntId,startClueId}=req.body;
         const profile=await Profile.findOne(profileId);
@@ -189,7 +187,7 @@ exports.solveClue = async (req, res) => {
 };
 
 
-export const fetchClueById=async(req,res)=>{
+exports.fetchClueById=async(req,res)=>{
     try{
         const {clueId}=req.body;
         if(!clueId){
@@ -233,3 +231,23 @@ exports.getClueById=async(req,res)=>{
         });
     }
 }
+
+exports.searchHunt = async (req, res) => {
+    try {
+        const { keyword } = req.query;
+        const query = {};
+
+        if (keyword) {
+            query.$or = [
+                { title: { $regex: keyword, $options: 'i' } }, // Case-insensitive search for title
+                { description: { $regex: keyword, $options: 'i' } } // Optional: search by description as well
+            ];
+        }
+
+        const hunts = await Hunt.find(query).populate("startClueId").populate("createdBy");
+        
+        res.status(200).json({ success: true, hunts });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
