@@ -1,13 +1,14 @@
-import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Link, TextField, Typography } from '@mui/material';
+/* eslint-disable react/prop-types */
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useGoogleLogin } from '@react-oauth/google';
-import CloseIcon from '@mui/icons-material/Close';
 import * as Yup from 'yup';
-import { loginUser, loginGoogle } from '../../State/Authentication/Action';
 import { googleAuth } from '../../Helper/googleApi';
+import { loginGoogle, loginUser } from '../../State/Authentication/Action';
 import './LoginPage.css';
 
 const Login = ({ open, handleClose, handleSignup }) => {
@@ -132,6 +133,9 @@ const Login = ({ open, handleClose, handleSignup }) => {
             <Button component="button" onClick={() => {handleSignup()}}>
               Sign up here
             </Button>
+          </Typography>
+          <Typography align='center' sx={{mt:2}}>
+            <Button component='button'>Forgot Your Password</Button>
           </Typography>
         </motion.div>
       </DialogContent>
