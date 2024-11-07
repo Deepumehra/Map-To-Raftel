@@ -41,13 +41,13 @@ const register = async (req, res) => {
 };
 const getUserDetails = async (req, res) => {
     try {
-        console.log("Request headers:", req.headers);
+        // console.log("Request headers:", req.headers);
 
         const authHeader = req.headers.authorization; // lowercase 'authorization'
         if (!authHeader) {
             return res.status(401).json({ message: "Authorization header missing" });
         }
-        console.log("Authorization Header:", authHeader);
+        // console.log("Authorization Header:", authHeader);
 
         const jwt = authHeader.split(' ')[1];
         if (!jwt) {
@@ -58,7 +58,7 @@ const getUserDetails = async (req, res) => {
         try {
             userId = getUserIdFromToken(jwt);
         } catch (error) {
-            console.error("Error extracting userId from token:", error);
+            // console.error("Error extracting userId from token:", error);
             return res.status(400).json({ message: "Invalid token" });
         }
 
@@ -66,7 +66,7 @@ const getUserDetails = async (req, res) => {
             return res.status(400).json({ message: "Invalid token" });
         }
 
-        console.log("Extracted userId:", userId);
+        // console.log("Extracted userId:", userId);
 
         const user = await User.findById(userId);
         if (!user) {
@@ -78,7 +78,7 @@ const getUserDetails = async (req, res) => {
             user
         });
     } catch (err) {
-        console.error("Error in getUserDetails function:", err);
+        // console.error("Error in getUserDetails function:", err);
         res.status(500).json({ error: err.message || "Internal server error" });
     }
 };

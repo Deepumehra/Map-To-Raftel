@@ -68,17 +68,17 @@ export const loginUser=(reqData)=>async(dispatch)=>{
 
 export const saveProfile=(reqData)=>{
     const jwt=localStorage.getItem('JWT');
-    console.log("jwt :",jwt);
+    // console.log("jwt :",jwt);
     return async (dispatch)=>{
         dispatch({type:SAVE_PROFILE_REQUEST});
-        console.log("Req Data :",reqData)
+        // console.log("Req Data :",reqData)
         try{
             const response=await axios.post('http://localhost:5454/auth/save-profile',reqData,{
                 headers: {
                     authorization: `Bearer ${jwt}`
                 },
             })
-            console.log("Response :",response.data.profile);
+            // console.log("Response :",response.data.profile);
             dispatch({type:SAVE_PROFILE_SUCCESS,payload:response.data.profile});
         }catch(error){
             const errorMessage = error.response?.data?.error || error.message;
@@ -90,7 +90,7 @@ export const saveProfile=(reqData)=>{
 // Action to fetch user profile
 export const fetchProfile = () => {
     const jwt = localStorage.getItem('JWT');
-    console.log("jwt:", jwt);
+    // console.log("jwt:", jwt);
     return async (dispatch) => {
         dispatch({ type: FETCH_PROFILE_REQUEST });
 
@@ -101,7 +101,7 @@ export const fetchProfile = () => {
                 },
             });
             
-            console.log("Response:", response.data.profile);
+            // console.log("Response:", response.data.profile);
             dispatch({ type: FETCH_PROFILE_SUCCESS, payload: response.data.profile });
         } catch (error) {
             const errorMessage = error.response?.data?.error || error.message;
@@ -116,7 +116,7 @@ export const updateProfile = (profileData) => async (dispatch) => {
         const response = await axios.put('http://localhost:5454/auth/update-profile', profileData, {
             headers: { Authorization: `Bearer ${jwt}` }
         });
-        console.log("Response :",response.data);
+        // console.log("Response :",response.data);
         dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: response.data.profile });
     } catch (error) {
         dispatch({ type: UPDATE_PROFILE_FAILURE, payload: error.message });
@@ -145,7 +145,7 @@ export const getUser = (token) => {
                 },
             });
             
-            console.log("Response:", response);
+            // console.log("Response:", response);
             const user = response.data.user;
             dispatch({ type: GET_USER_SUCCESS, payload: user });
             // console.log("Req User:", user);

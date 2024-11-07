@@ -1,7 +1,8 @@
 import BadgeIcon from '@mui/icons-material/Badge';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import {
-    Avatar, Box, Button, Card, Container, Drawer, Grid, List, ListItem, ListItemText,
+    Avatar, Box, Button, Card,
+    Drawer, Grid, List, ListItem, ListItemText,
     TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
@@ -19,11 +20,11 @@ import A6 from '../../Components/Avatars/A6.jpeg';
 import A7 from '../../Components/Avatars/A7.jpeg';
 import A8 from '../../Components/Avatars/A8.jpeg';
 import A9 from '../../Components/Avatars/A9.jpeg';
+import Footer from '../../Components/Footer/Footer';
+import Header from '../../Components/Header/Header';
 import AvatarSelectDialog from '../../Components/ProfileAvatarDialogue/ProfileAvatarDialogue';
 import { fetchProfile, saveProfile, updateProfile } from '../../State/Authentication/Action';
 import './Profile.css';
-import Header from '../../Components/Header/Header';
-import Footer from '../../Components/Footer/Footer';
 const avatars = [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10];
 
 const validationSchema = Yup.object().shape({
@@ -56,7 +57,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         dispatch(fetchProfile());
-        console.log(profile);
+        // console.log(profile);
     }, [dispatch]);
 
     useEffect(() => {

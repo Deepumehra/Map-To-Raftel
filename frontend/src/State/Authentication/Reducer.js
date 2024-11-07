@@ -40,11 +40,11 @@ const authReducer = (state = initialState, action) => {
             return { ...state, isLoading: false, success: action.payload?.message };
 
         case SAVE_PROFILE_SUCCESS:
-            console.log("Profile Saved:", action.payload);
+            // console.log("Profile Saved:", action.payload);
             return { ...state, isLoading: false, profile: action.payload };
 
         case FETCH_PROFILE_SUCCESS: // New success case for fetching profile
-            console.log("Fetched Profile:", action.payload);
+            // console.log("Fetched Profile:", action.payload);
             return { ...state, isLoading: false, profile: action.payload };
 
         case REGISTER_FAILURE:

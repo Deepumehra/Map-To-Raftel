@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/prop-types */
 /* 
     This is the page which shows the app hunts, its divided into four sections: -
         * Completed Hunts
@@ -11,15 +13,15 @@
 // src/components/HuntPage.js
 
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Divider, Grid, IconButton, TextField, Typography, Container } from '@mui/material';
-import React, {useState, useEffect} from 'react';
+import { Box, Container, Divider, Grid, IconButton, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import bullet from '../../Components/Assists/bullet.png';
 import roger from '../../Components/Assists/roger.jpeg';
 import Footer from '../../Components/Footer/Footer';
 import Header from '../../Components/Header/Header';
 import HuntCard from '../../Components/HuntCard/HuntCard';
 import HuntDialog from '../../Components/HuntDialogue/HuntDialogue';
-import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile } from '../../State/Authentication/Action';
 import { getAllHunts, getAllHuntsById, joinHunt } from '../../State/Hunts/Action';
 
@@ -40,35 +42,44 @@ const HuntPage = () => {
     const allHunts = useSelector((state) => state.hunt.allHunts);
     const completedHunts = useSelector((state) => state.hunt.completedHunts);
     const activeHunts = useSelector((state) => state.hunt.activeHunts);
-
     const [untouchedHunts, setUntouchedHunts] = useState(exampleData);
-
+    // console.log("Profile :",profile);
     useEffect(() => {
         updateUntouchedHunts();
     }, [allHunts, completedHunts, activeHunts]);
 
     const updateUntouchedHunts = () => {
-        const untouched = allHunts.filter(
-            (hunt) =>
-                !completedHunts.some((completed) => completed.id === hunt.id) &&
-                !activeHunts.some((active) => active.id === hunt.id)
-        );
+        // console.log("Untouched hunts :",untouchedHunts);
+        // const untouched = allHunts.filter(
+        //     (hunt) =>
+        //         !completedHunts.some((completed) => completed.id === hunt.id) &&
+        //         !activeHunts.some((active) => active.id === hunt.id)
+        // );
+        const untouched=[];
         setUntouchedHunts(untouched);
     };
 
     useEffect(() => {
         dispatch(fetchProfile());
-        console.log(profile);
+        // console.log(profile);
     }, [dispatch]);
 
     useEffect(() => {
         dispatch(getAllHunts());
         console.log(allHunts);
+        if(profile){
+            // console.log("Profile :",profile._id);
+            const profileId=profile._id;
+            dispatch(getAllHuntsById(profileId));     
+        }
     }, [dispatch]);
-
-    useEffect(() => {
-        dispatch(getAllHuntsById(profile._id));
-    }, [dispatch]);
+    useEffect(()=>{
+        if(profile){
+            // console.log("Profile :",profile._id);
+            const profileId=profile._id;
+            dispatch(getAllHuntsById(profileId));     
+        }
+    },[dispatch])
 
     const [dialogueOpen, setDialogueOpen] = useState(false);
     const [currentHuntMask, setCurrentHuntMask] = useState(null);
@@ -82,9 +93,7 @@ const HuntPage = () => {
             setCurrentHunt(completedHunts[currentHuntIndex]);
         } else if(currentHuntMask === "Active") {
             setCurrentHunt(activeHunts[currentHuntIndex]);
-        } else if(currentHuntMask === "Daily") {
-            setCurrentHunt(dailyHunts[currentHuntIndex]);
-        } else if(currentHuntMask === "Untouched") {
+        }else if(currentHuntMask === "Untouched") {
             setCurrentHunt(untouchedHunts[currentHuntIndex]);
         }
         setDialogueOpen(true);
@@ -105,17 +114,13 @@ const HuntPage = () => {
             newIndex = (currentHuntIndex + 1) % completedHunts.length;
         } else if (currentHuntMask === "Active") {
             newIndex = (currentHuntIndex + 1) % activeHunts.length;
-        } else if (currentHuntMask === "Daily") {
-            newIndex = (currentHuntIndex + 1) % dailyHunts.length;
-        } else if (currentHuntMask === "Untouched") {
+        }  else if (currentHuntMask === "Untouched") {
             newIndex = (currentHuntIndex + 1) % untouchedHunts.length;
         }
 
         setCurrentHuntIndex(newIndex);
         setCurrentHunt((currentHuntMask === "Complete") ? completedHunts[newIndex] :
-                    (currentHuntMask === "Active") ? activeHunts[newIndex] :
-                    (currentHuntMask === "Daily") ? dailyHunts[newIndex] :
-                    untouchedHunts[newIndex]);
+                    (currentHuntMask === "Active") ? activeHunts[newIndex] : untouchedHunts[newIndex]);
     };
 
     const handlePreviousClicked = () => {
@@ -124,21 +129,18 @@ const HuntPage = () => {
             newIndex = (currentHuntIndex - 1 + completedHunts.length) % completedHunts.length;
         } else if (currentHuntMask === "Active") {
             newIndex = (currentHuntIndex - 1 + activeHunts.length) % activeHunts.length;
-        } else if (currentHuntMask === "Daily") {
-            newIndex = (currentHuntIndex - 1 + dailyHunts.length) % dailyHunts.length;
-        } else if (currentHuntMask === "Untouched") {
+        }else if (currentHuntMask === "Untouched") {
             newIndex = (currentHuntIndex - 1 + untouchedHunts.length) % untouchedHunts.length;
         }
 
         setCurrentHuntIndex(newIndex);
         setCurrentHunt((currentHuntMask === "Complete") ? completedHunts[newIndex] :
                     (currentHuntMask === "Active") ? activeHunts[newIndex] :
-                    (currentHuntMask === "Daily") ? dailyHunts[newIndex] :
                     untouchedHunts[newIndex]);
     };
 
     const handleParticipate = (huntId) => {
-        if(profile._id != null) {
+        if(profile && profile._id) {
             const profileId = profile._id;
             dispatch(joinHunt({profileId, huntId}));
         }

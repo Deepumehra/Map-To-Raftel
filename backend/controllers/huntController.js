@@ -1,3 +1,4 @@
+const mongoose=require('mongoose');
 const Hunt = require('../models/huntSchema');  // Import Hunt model
 const Clue = require('../models/clueSchema')// Import Clue model
 const Profile = require('../models/profileModel')
@@ -45,10 +46,8 @@ exports.createHunt = async (req, res) => {
 
 exports.getAllHunts = async (req, res) => {
     try {
-        const { createdBy } = req.query;
-
-        // Fetch all hunts created by the specified user and populate associated clues
-        const hunts = await Hunt.find({ createdBy: createdBy }).populate('clues');
+        const hunts = await Hunt.find({})
+        console.log("Hunts :",hunts);
         res.status(200).json({ success: true, hunts });
         
     } catch (error) {
@@ -60,8 +59,16 @@ exports.getAllHunts = async (req, res) => {
 
 exports.getAllHuntsById = async (req, res) => {
     try {
-        const { profileId } = req.body;
-
+        console.log("Req body :",req);
+        const {profileId }= req.query;
+        console.log("Profile Id :",profileId);
+        if (!profileId) {
+            return res.status(400).json({ success: false, message: "Profile ID is required" });
+        }
+        if (!mongoose.Types.ObjectId.isValid(profileId)) {
+            return res.status(400).json({ success: false, message: "Invalid Profile ID format" });
+        }
+        // console.log("Profile Id type :",profileId.Types());
         // Fetch the profile and populate hunt details for active and completed hunts
         const profile = await Profile.findById(profileId)
             .populate({
@@ -72,7 +79,6 @@ exports.getAllHuntsById = async (req, res) => {
                 path: 'completedHunts.huntId',
                 model: 'Hunt'
             });
-
         if (!profile) {
             return res.status(404).json({ success: false, message: "Profile not found" });
         }
@@ -121,7 +127,8 @@ exports.getAllHuntsById = async (req, res) => {
 // Get a single Hunt by ID
 exports.fetchHuntById = async (req, res) => {
     try {
-        const hunt = await Hunt.findById(req.params.id).populate('startClueId');
+        const huntId=req.body;
+        const hunt = await Hunt.findById(huntId).populate('startClueId');
         if (!hunt) {
             return res.status(404).json({ success: false, message: 'Hunt not found' });
         }
