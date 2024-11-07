@@ -27,7 +27,6 @@ const authReducer = (state = initialState, action) => {
         case SAVE_PROFILE_REQUEST: // Add SAVE_PROFILE_REQUEST here
         case FETCH_PROFILE_REQUEST: // Add FETCH_PROFILE_REQUEST here
             return { ...state, isLoading: true, error: null, success: null };
-
         case REGISTER_SUCCESS:
             return { ...state, isLoading: false, success: "Register Success" };
 

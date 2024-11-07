@@ -1,4 +1,4 @@
-const Leaderboard = require('../models/Leaderboard');
+const Leaderboard = require('../models/leaderboardModel.js');
 
 // Get leaderboard for a specific hunt
 exports.getLeaderboard = async (req, res) => {

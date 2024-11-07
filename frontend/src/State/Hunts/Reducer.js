@@ -20,6 +20,9 @@ import {
     SOLVE_CLUE_FAILURE,
     SOLVE_CLUE_REQUEST,
     SOLVE_CLUE_SUCCESS,
+    JOIN_HUNT_ERROR,
+    JOIN_HUNT_REQUEST,
+    JOIN_HUNT_SUCCESS
 } from './ActionType';
 const initialState={
     activeHunts:[],
@@ -47,18 +50,22 @@ export const huntReducer=(state=initialState,action)=>{
             return { ...state, loading: true, error: null };
         case GET_ALL_HUNTS_REQUEST:
             return { ...state, loading: true, error: null };
+        case JOIN_HUNT_REQUEST:
+            return { ...state, loading: true, error: null };
+        case JOIN_HUNT_SUCCESS:
+            return {...state, loading: false, success: true, activeHunts: action.payload.activeHunts, completedHunts: action.payload.completedHunts};
         case CREATE_HUNT_SUCCESS:
             return {
                 ...state,
                 loading:false,
                 success:"Hunt Created successfully",
-                activeHunts:[...state.activeHunts,action.payload]
             }
         case FETCH_HUNT_SUCCESS:
             return {
                 ...state,
                 loading:false,
                 currentHunt:action.payload,
+                clue: action.payload.currentClue,
                 success:"Hunt Fetched successfully",
             }
         case FETCH_CLUE_BY_ID_SUCCESS:
@@ -108,6 +115,8 @@ export const huntReducer=(state=initialState,action)=>{
         case SOLVE_CLUE_FAILURE:
         case FETCH_CLUE_BY_ID_FAILURE:
         case SEARCH_HUNT_FAILURE:
+        case JOIN_HUNT_ERROR:
+            return { ...state, loading: false, error: true, success: null}
         case GET_ALL_HUNTS_FAILURE:
             return { ...state, loading: false, error: action.payload, success: null };
         case GET_ALL_HUNTS_BY_ID_FAILURE:

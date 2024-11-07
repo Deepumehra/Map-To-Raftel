@@ -17,7 +17,8 @@ const SinglePlayer = () => {
     const [clueSolved, setClueSolved] = useState(0);
     const [anchorElNav, setAnchorElNav] = useState(null);
     const { huntId } = useParams();
-    const {auth,hunt}=useSelector((store)=>store);
+    const {auth,hunt}=useSelector((state)=>state);
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [totalPoints, setTotalPoints] = useState(0);
@@ -93,6 +94,16 @@ const SinglePlayer = () => {
         }
     };
 
+    useEffect(() => {
+        if (currentHunt) {
+            setTitle(currentHunt.title || '');
+            setDescription(currentHunt.description || '');
+            setTotalPoints(currentHunt.totalPoints || 0);
+            setCurrentClue(currentHunt.currentClue || {});
+            setCluesSolved(currentHunt.cluesSolved || 0);
+        }
+    }, [currentHunt]);
+
     // Mock implementation of handleClueSolved
     const handleClueSolved = () => {
         const profileId=auth.profile._id;
@@ -100,7 +111,7 @@ const SinglePlayer = () => {
         const nextClueId=hunt.clue.nextClueId;
         setClueSolved(clueSolved + 1);
         setPoints(points + currentClue.points);
-        dispatchEvent(solveClue({profileId,huntId,currentClueId,nextClueId,points}));
+        dispatch(solveClue({profileId,huntId,currentClueId,nextClueId,points}));
         // fetch next clue
         // add the current clue to the solvedClueList
         // setCurrentClue(the thing fetched above);

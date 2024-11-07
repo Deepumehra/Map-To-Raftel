@@ -2,8 +2,6 @@ const mongoose=require('mongoose');
 const ClueSchema=new mongoose.Schema({
     title:String,
     description:String,
-    startingLat:Number,
-    startingLong:Number,
     endingLat:Number,
     endingLong:Number,
     nextClueId:{

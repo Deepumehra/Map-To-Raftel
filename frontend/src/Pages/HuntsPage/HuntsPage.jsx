@@ -12,7 +12,7 @@
 
 import SearchIcon from '@mui/icons-material/Search';
 import { Box, Divider, Grid, IconButton, TextField, Typography, Container } from '@mui/material';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import bullet from '../../Components/Assists/bullet.png';
 import roger from '../../Components/Assists/roger.jpeg';
 import Footer from '../../Components/Footer/Footer';
@@ -21,7 +21,7 @@ import HuntCard from '../../Components/HuntCard/HuntCard';
 import HuntDialog from '../../Components/HuntDialogue/HuntDialogue';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProfile } from '../../State/Authentication/Action';
-import { getAllHunts } from '../../State/Hunts/Action';
+import { getAllHunts, getAllHuntsById, joinHunt } from '../../State/Hunts/Action';
 
 // import { useSelector } from 'react-redux';
 
@@ -36,8 +36,25 @@ const HuntPage = () => {
     ];
 
     const dispatch = useDispatch();
-    const profile = useSelector((state) => state.auth);
-    const allHunts = useSelector((state) => state.hunt);
+    const profile = useSelector((state) => state.auth.profile);
+    const allHunts = useSelector((state) => state.hunt.allHunts);
+    const completedHunts = useSelector((state) => state.hunt.completedHunts);
+    const activeHunts = useSelector((state) => state.hunt.activeHunts);
+
+    const [untouchedHunts, setUntouchedHunts] = useState(exampleData);
+
+    useEffect(() => {
+        updateUntouchedHunts();
+    }, [allHunts, completedHunts, activeHunts]);
+
+    const updateUntouchedHunts = () => {
+        const untouched = allHunts.filter(
+            (hunt) =>
+                !completedHunts.some((completed) => completed.id === hunt.id) &&
+                !activeHunts.some((active) => active.id === hunt.id)
+        );
+        setUntouchedHunts(untouched);
+    };
 
     useEffect(() => {
         dispatch(fetchProfile());
@@ -49,10 +66,9 @@ const HuntPage = () => {
         console.log(allHunts);
     }, [dispatch]);
 
-    const [completedHunts, setCompletedHunts] = useState(exampleData);
-    const [activeHunts, setActiveHunts] = useState(exampleData);
-    const [dailyHunts, setDailyHunts] = useState(exampleData);
-    const [untouchedHunts, setUntouchedHunts] = useState(exampleData);
+    useEffect(() => {
+        dispatch(getAllHuntsById(profile._id));
+    }, [dispatch]);
 
     const [dialogueOpen, setDialogueOpen] = useState(false);
     const [currentHuntMask, setCurrentHuntMask] = useState(null);
@@ -121,6 +137,12 @@ const HuntPage = () => {
                     untouchedHunts[newIndex]);
     };
 
+    const handleParticipate = (huntId) => {
+        if(profile._id != null) {
+            const profileId = profile._id;
+            dispatch(joinHunt({profileId, huntId}));
+        }
+    }
 
     return (
         <div>
@@ -175,7 +197,7 @@ const HuntPage = () => {
                         </Grid>
                     </Grid>
 
-                    {/* Daily Hunts */}
+                    {/* Daily Hunts
                     <Grid item xs={12}>
                         <SectionHeader title="Daily Hunts" />
                         <Grid container spacing={2}>
@@ -183,7 +205,7 @@ const HuntPage = () => {
                                 <HuntCard key={hunt.id} mask='Daily' handleCardClicked={handleCardClicked} hunt={hunt} color="primary" />
                             ))}
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
                 {/* HuntDialog */}
                 {dialogueOpen && currentHunt? (
@@ -193,6 +215,7 @@ const HuntPage = () => {
                             open={dialogueOpen}
                             onClose={handleDialogueClose}
                             hunt={currentHunt}
+                            handleParticipate={handleParticipate}
                             onPrevious={handlePreviousClicked}
                             onNext={handleNextClicked}
                         />

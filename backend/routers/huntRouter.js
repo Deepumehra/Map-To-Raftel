@@ -1,11 +1,12 @@
 const express=require('express');
 const router=express.Router();
-const {createHunt,fetchHuntById,solveClue,getAllHuntsById,fetchClueById,searchHunt, getAllHunts}=require('../controllers/huntController');
+const {createHunt,fetchHuntById,solveClue,getAllHuntsById,fetchClueById,searchHunt, getAllHunts, joinHunt}=require('../controllers/huntController');
 router.post('/create',createHunt);
 router.get('/:id',fetchHuntById);
 router.put('/solve-clue',solveClue);
 router.get('/fetch-clue-by-id',fetchClueById);
 router.get('/getHunts',getAllHuntsById);
+router.post('/join-hunt', joinHunt);
 router.get('/getAllHunts', getAllHunts);
 router.get('/search',searchHunt);
 module.exports=router;

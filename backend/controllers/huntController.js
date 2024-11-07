@@ -8,7 +8,7 @@ exports.createHunt = async (req, res) => {
 
         let totalPoints = 0;
         
-        const previousClueId = null;  // To store the next clue reference
+        let previousClueId = null;  // To store the next clue reference
 
         // Reverse loop through clues to set up the linked list structure
         const clueIds = await Promise.all(clues.reverse().map(async (clueData) => {
@@ -20,7 +20,7 @@ exports.createHunt = async (req, res) => {
                 nextClueId: previousClueId  // Link to the previous clue
             });
 
-            points += clue.points;
+            totalPoints += clue.points;
 
             const savedClue = await clue.save();  // Save clue to the database
             previousClueId = savedClue._id;  // Update previous clue reference to current
@@ -32,7 +32,7 @@ exports.createHunt = async (req, res) => {
             title,
             description,
             startClueId:startClue,
-            points: totalPoints,
+            totalPoints: totalPoints,
             createdBy: createdBy == null ? 'admin' : createdBy.toString(),
         });
 
@@ -120,7 +120,6 @@ exports.getAllHuntsById = async (req, res) => {
 
 // Get a single Hunt by ID
 exports.fetchHuntById = async (req, res) => {
-    const
     try {
         const hunt = await Hunt.findById(req.params.id).populate('startClueId');
         if (!hunt) {
@@ -134,13 +133,22 @@ exports.fetchHuntById = async (req, res) => {
 
 exports.joinHunt=async(req,res)=>{
     try{
-        const {profileId,huntId,startClueId}=req.body;
+        const {profileId, huntId}=req.body;
         const profile=await Profile.findOne(profileId);
         const activeHunt = profile.activeHunts.find(hunt => hunt.huntId.toString() === huntId);
 
         if (activeHunt) {
             return res.status(404).json({ message: "User already Participating" });
         }
+
+        const hunt = await Hunt.findOne(huntId);
+
+        if (!hunt) {
+            return res.status(404).json({message: "Hunt not found"});
+        }
+
+        const startClueId = hunt.startClueId;
+
         profile.activeHunts.push({
             huntId:huntId,
             startClueId:startClueId,

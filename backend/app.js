@@ -7,7 +7,7 @@ const connectToDB =require('./config/db');
 const authRouters=require('./routers/authRouter');
 const huntRouters=require('./routers/huntRouter');
 const teamRouter=require('./routers/teamRoutes');
-const leaderboardRouter=require('./routers/leaderboardRouter');
+const leaderboardRouter=require('./routers/leaderboardRoutes');
 const morgan = require('morgan');
 const PORT=5454 || process.env.PORT;
 app.use(morgan());
