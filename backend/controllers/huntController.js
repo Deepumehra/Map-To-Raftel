@@ -120,8 +120,9 @@ exports.getAllHuntsById = async (req, res) => {
 
 // Get a single Hunt by ID
 exports.fetchHuntById = async (req, res) => {
+    const
     try {
-        const hunt = await Hunt.findById(req.params.id).populate('clues');
+        const hunt = await Hunt.findById(req.params.id).populate('startClueId');
         if (!hunt) {
             return res.status(404).json({ success: false, message: 'Hunt not found' });
         }
@@ -159,7 +160,7 @@ exports.joinHunt=async(req,res)=>{
 
 exports.solveClue = async (req, res) => {
     try {
-        const { profileId, huntId, currentClueId, nextClueId } = req.body;
+        const { profileId, huntId, currentClueId, nextClueId,points } = req.body;
         const profile = await Profile.findById(profileId);
 
         // Find the active hunt with the given huntId
@@ -173,14 +174,13 @@ exports.solveClue = async (req, res) => {
         if (activeHunt.currentClueIds.toString() !== currentClueId) {
             return res.status(400).json({ message: "Current clue does not match" });
         }
-
         // Mark currentClueId as solved
         activeHunt.solvedClues.push({
             clueId: currentClueId,
             dateSolved: new Date()
         });
-
-        // Check if there's a next clue or if this hunt is completed
+        activeHunt.points+=points; 
+        profile.points+=points;       // Check if there's a next clue or if this hunt is completed
         if (nextClueId) {
             // Update currentClueIds to the next clue
             activeHunt.currentClueIds = nextClueId;

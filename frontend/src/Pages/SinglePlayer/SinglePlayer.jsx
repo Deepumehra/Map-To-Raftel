@@ -1,25 +1,23 @@
-import { AppBar, Box, Button, Grid, Toolbar, Typography, TextField, IconButton, MenuItem, Menu } from '@mui/material';
-import { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
+import { AppBar, Box, Button, Grid, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import Clue from '../../Components/Clue/Clue';
 import Map from '../../Components/CurrentMap/Map';
 import Footer from '../../Components/Footer/Footer';
-import Clue from '../../Components/Clue/Clue';
-import SendIcon from '@mui/icons-material/Send';
-import './SinglePlayer.css';
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { fetchHuntById } from '../../State/Hunts/Action';
 import Header from '../../Components/Header/Header';
+import { fetchClueById, fetchHuntById, solveClue } from '../../State/Hunts/Action';
+import './SinglePlayer.css';
 
 const SinglePlayer = () => {
+    const dispatch=useDispatch();
     const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [points, setPoints] = useState(0);
     const [clueSolved, setClueSolved] = useState(0);
     const [anchorElNav, setAnchorElNav] = useState(null);
-    const { huntid } = useParams();
-
-    const currentHunt = useSelector((state) => state.hunt);
-
+    const { huntId } = useParams();
+    const {auth,hunt}=useSelector((store)=>store);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [totalPoints, setTotalPoints] = useState(0);
@@ -27,8 +25,11 @@ const SinglePlayer = () => {
     const [cluesSolved, setCluesSolved] = useState(0);
 
     useEffect(() => {
-        dispatch(fetchHuntById(huntid));
-        console.log(currentHunt);
+        dispatch(fetchHuntById(huntId));
+        console.log("Current Hunt details :",hunt);
+        setCurrentClue(hunt.currentHunt.startClueId);
+        dispatch(fetchClueById(currentClue));
+        console.log("Current clue details :",currentClue)        
     }, [dispatch]);
 
     useEffect(() => {
@@ -73,7 +74,7 @@ const SinglePlayer = () => {
     const handleCheckLocation = () => {
         const userLatitude = location.latitude;
         const userLongitude = location.longitude;
-
+        
         // Replace with the actual latitude and longitude of the current clue
         const clueLatitude = currentClue.latitude; 
         const clueLongitude = currentClue.longitude;
@@ -94,17 +95,17 @@ const SinglePlayer = () => {
 
     // Mock implementation of handleClueSolved
     const handleClueSolved = () => {
+        const profileId=auth.profile._id;
+        const currentClueId=hunt.clue._id;
+        const nextClueId=hunt.clue.nextClueId;
         setClueSolved(clueSolved + 1);
         setPoints(points + currentClue.points);
-
+        dispatchEvent(solveClue({profileId,huntId,currentClueId,nextClueId,points}));
         // fetch next clue
         // add the current clue to the solvedClueList
         // setCurrentClue(the thing fetched above);
-
         console.log("Congratulations! You've solved the clue.");
     };
-
-
     return (
         <div>
             <Header />
