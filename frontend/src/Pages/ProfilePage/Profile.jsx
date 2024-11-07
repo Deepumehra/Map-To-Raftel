@@ -56,6 +56,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         dispatch(fetchProfile());
+        console.log(profile);
     }, [dispatch]);
 
     useEffect(() => {
@@ -125,7 +126,7 @@ const ProfilePage = () => {
                             </Typography>
                         </Box>
                     </Box>
-                    <Button onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
+                    <Button sx={{fontSize: 10}} onClick={() => setSidePaneOpen(true)}>View Hunts & Achievements</Button>
                 </Box>
 
                 <AvatarSelectDialog open={openAvatarDialogue} onClose={() => setOpenAvatarDialogue(false)} onSelect={handleSelectAvatar} />

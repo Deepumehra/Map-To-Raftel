@@ -19,6 +19,10 @@ import Footer from '../../Components/Footer/Footer';
 import Header from '../../Components/Header/Header';
 import HuntCard from '../../Components/HuntCard/HuntCard';
 import HuntDialog from '../../Components/HuntDialogue/HuntDialogue';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProfile } from '../../State/Authentication/Action';
+import { getAllHunts } from '../../State/Hunts/Action';
+
 // import { useSelector } from 'react-redux';
 
 const HuntPage = () => {
@@ -31,16 +35,24 @@ const HuntPage = () => {
         { id: 4, title: "hello", description: "Find your way through the"}
     ];
 
-    // Use the actual Redux state if available, otherwise fall back to example data
-    // const completedHunts = useSelector(state => state.hunts.completedHunts || exampleData);
-    // const untouchedHunts = useSelector(state => state.hunts.untouchedHunts || exampleData);
-    // const activeHunts = useSelector(state => state.hunts.activeHunts || exampleData);
-    // const dailyHunts = useSelector(state => state.hunts.dailyHunts || exampleData);
+    const dispatch = useDispatch();
+    const profile = useSelector((state) => state.auth);
+    const allHunts = useSelector((state) => state.hunt);
 
-    const completedHunts = exampleData;
-    const activeHunts = exampleData;
-    const dailyHunts = exampleData;
-    const untouchedHunts = exampleData;
+    useEffect(() => {
+        dispatch(fetchProfile());
+        console.log(profile);
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(getAllHunts());
+        console.log(allHunts);
+    }, [dispatch]);
+
+    const [completedHunts, setCompletedHunts] = useState(exampleData);
+    const [activeHunts, setActiveHunts] = useState(exampleData);
+    const [dailyHunts, setDailyHunts] = useState(exampleData);
+    const [untouchedHunts, setUntouchedHunts] = useState(exampleData);
 
     const [dialogueOpen, setDialogueOpen] = useState(false);
     const [currentHuntMask, setCurrentHuntMask] = useState(null);

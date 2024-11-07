@@ -11,6 +11,9 @@ import {
     GET_ALL_HUNTS_FAILURE,
     GET_ALL_HUNTS_REQUEST,
     GET_ALL_HUNTS_SUCCESS,
+    GET_ALL_HUNTS_BY_ID_SUCCESS,
+    GET_ALL_HUNTS_BY_ID_REQUEST,
+    GET_ALL_HUNTS_BY_ID_FAILURE,
     SEARCH_HUNT_FAILURE,
     SEARCH_HUNT_REQUEST,
     SEARCH_HUNT_SUCCESS,
@@ -23,6 +26,7 @@ const initialState={
     completedHunts:[],
     currentHunt:null,
     search:[],
+    allHunts: [],
     clue:null,
     loading:false,
     error:null,
@@ -39,6 +43,8 @@ export const huntReducer=(state=initialState,action)=>{
                 loading:true,
             }
         case FETCH_CLUE_BY_ID_REQUEST:
+        case GET_ALL_HUNTS_BY_ID_REQUEST:
+            return { ...state, loading: true, error: null };
         case GET_ALL_HUNTS_REQUEST:
             return { ...state, loading: true, error: null };
         case CREATE_HUNT_SUCCESS:
@@ -75,13 +81,20 @@ export const huntReducer=(state=initialState,action)=>{
                 ),
                 success:"Clue solved successfully",
             }
-        case GET_ALL_HUNTS_SUCCESS:
+        case GET_ALL_HUNTS_BY_ID_SUCCESS:
             return {
                 ...state,
                 loading:false,
                 activeHunts:action.payload.activeHunts,
                 completedHunts:action.payload.completedHunts,
                 success:"All hunts fetched successfully"
+            }
+        case GET_ALL_HUNTS_SUCCESS:
+            return {
+                ...state,
+                loading:false,
+                allHunts:action.payload,
+                success: "All Hunts are fetched successfully"
             }
         case SEARCH_HUNT_SUCCESS:
             return {
@@ -96,6 +109,8 @@ export const huntReducer=(state=initialState,action)=>{
         case FETCH_CLUE_BY_ID_FAILURE:
         case SEARCH_HUNT_FAILURE:
         case GET_ALL_HUNTS_FAILURE:
+            return { ...state, loading: false, error: action.payload, success: null };
+        case GET_ALL_HUNTS_BY_ID_FAILURE:
             return { ...state, loading: false, error: action.payload, success: null };
         default:
             return state;

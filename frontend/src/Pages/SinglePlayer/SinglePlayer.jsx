@@ -6,13 +6,30 @@ import Footer from '../../Components/Footer/Footer';
 import Clue from '../../Components/Clue/Clue';
 import SendIcon from '@mui/icons-material/Send';
 import './SinglePlayer.css';
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { fetchHuntById } from '../../State/Hunts/Action';
+import Header from '../../Components/Header/Header';
 
 const SinglePlayer = () => {
     const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [points, setPoints] = useState(0);
     const [clueSolved, setClueSolved] = useState(0);
-    const [currentClue, setCurrentClue] = useState({ clueID: 1, latitude: 29.2902040, longitude: 78.2857349, title: "First Clue", message: "Find the tallest tree in the park.", points: 100 });
     const [anchorElNav, setAnchorElNav] = useState(null);
+    const { huntid } = useParams();
+
+    const currentHunt = useSelector((state) => state.hunt);
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [totalPoints, setTotalPoints] = useState(0);
+    const [currentClue, setCurrentClue] = useState({});
+    const [cluesSolved, setCluesSolved] = useState(0);
+
+    useEffect(() => {
+        dispatch(fetchHuntById(huntid));
+        console.log(currentHunt);
+    }, [dispatch]);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -21,6 +38,9 @@ const SinglePlayer = () => {
                 setLocation({ latitude, longitude });
             };
             navigator.geolocation.watchPosition(success);
+            if(location) {
+                console.log(location);
+            }
         }
     }, []);
 
@@ -87,6 +107,7 @@ const SinglePlayer = () => {
 
     return (
         <div>
+            <Header />
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>

@@ -4,7 +4,9 @@ const Profile = require('../models/profileModel')
 
 exports.createHunt = async (req, res) => {
     try {
-        const { title, description, clues } = req.body;
+        const { title, description, clues, createdBy } = req.body;
+
+        let totalPoints = 0;
         
         const previousClueId = null;  // To store the next clue reference
 
@@ -18,6 +20,8 @@ exports.createHunt = async (req, res) => {
                 nextClueId: previousClueId  // Link to the previous clue
             });
 
+            points += clue.points;
+
             const savedClue = await clue.save();  // Save clue to the database
             previousClueId = savedClue._id;  // Update previous clue reference to current
 
@@ -27,13 +31,29 @@ exports.createHunt = async (req, res) => {
         const newHunt = new Hunt({
             title,
             description,
-            startClueId:startClue
+            startClueId:startClue,
+            points: totalPoints,
+            createdBy: createdBy == null ? 'admin' : createdBy.toString(),
         });
 
         const savedHunt = await newHunt.save();
         res.status(201).json({ success: true, data: savedHunt });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+exports.getAllHunts = async (req, res) => {
+    try {
+        const { createdBy } = req.query;
+
+        // Fetch all hunts created by the specified user and populate associated clues
+        const hunts = await Hunt.find({ createdBy: createdBy }).populate('clues');
+        res.status(200).json({ success: true, hunts });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 };
 

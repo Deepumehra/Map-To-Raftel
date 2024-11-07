@@ -9,6 +9,7 @@ exports.createTeam = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 // Get a specific team by ID
 exports.getTeam = async (req, res) => {
     try {

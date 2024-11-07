@@ -2,11 +2,6 @@ const mongoose=require("mongoose");
 const HuntSchema=new mongoose.Schema({
     title:String,
     description:String,
-    status:{
-        type:String,
-        enum:["SOLVED","UNSOLVED","PARTIAL"],
-        default:"UNSOLVED",
-    },
     startClueId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'clue',
@@ -17,8 +12,7 @@ const HuntSchema=new mongoose.Schema({
     },
     totalPoints:Number,
     createdBy:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Profile",
+        type: String,
     }
 });
 const Hunt=mongoose.model("Hunt",HuntSchema);
