@@ -25,7 +25,6 @@ const leaderboardSchema = new mongoose.Schema({
             type: Number,
         },
     }],
-
     // Team leaderboard entries
     teamScores: [{
         teamId: {

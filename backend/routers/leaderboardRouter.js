@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const leaderboardController = require('../controllers/leaderboardController');
 
+router.post('/:id',leaderboardController.createLeaderboard);
 // Route to get leaderboard for a specific hunt
 router.get('/:huntId', leaderboardController.getLeaderboard);
 

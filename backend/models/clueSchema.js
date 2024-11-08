@@ -6,7 +6,7 @@ const ClueSchema=new mongoose.Schema({
     endingLong:Number,
     nextClueId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'clue',
+        ref:'Clue',
     },
     isDestinationReached:{
         type:Boolean,

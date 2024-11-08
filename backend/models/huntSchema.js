@@ -11,6 +11,20 @@ const HuntSchema=new mongoose.Schema({
         default:0,
     },
     totalPoints:Number,
+    totalUsers:{
+        type:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Profile',
+        }],
+        default:[],
+    },
+    teams:{
+        type:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Team",
+        }],
+        default:[],
+    },
     createdBy:{
         type: String,
     }

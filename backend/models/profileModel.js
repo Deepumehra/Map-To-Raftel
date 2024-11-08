@@ -75,6 +75,10 @@ const UserSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Clue',
             },
+            solvedBy:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref:'Profile',
+            },
             dateSolved: {
                 type: Date,
                 default: Date.now,
@@ -84,7 +88,6 @@ const UserSchema = new mongoose.Schema({
             type:Number,
             default:0,
         }
-
     }],
     description: String,
     phoneNumber: {

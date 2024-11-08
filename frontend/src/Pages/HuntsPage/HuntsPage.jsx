@@ -67,11 +67,6 @@ const HuntPage = () => {
     useEffect(() => {
         dispatch(getAllHunts());
         console.log(allHunts);
-        if(profile){
-            // console.log("Profile :",profile._id);
-            const profileId=profile._id;
-            dispatch(getAllHuntsById(profileId));     
-        }
     }, [dispatch]);
     useEffect(()=>{
         if(profile){
@@ -85,7 +80,6 @@ const HuntPage = () => {
     const [currentHuntMask, setCurrentHuntMask] = useState(null);
     const [currentHuntIndex, setCurrentHuntIndex] = useState(null);
     const [currentHunt, setCurrentHunt] = useState(null);
-
     const handleCardClicked = (hunt, mask) => {
         setCurrentHuntIndex(hunt.id);
         setCurrentHuntMask(mask);

@@ -18,53 +18,70 @@ const teamSchema = new mongoose.Schema({
                 default: undefined
             }
         },
-        // Adding a status for each player, like if they're active or idle
-        status: {
-            type: String,
-            enum: ['active', 'idle', 'disconnected'],
-            default: 'active'
-        },
-        // Track the timestamp of each player’s last activity for better game management
-        lastActiveAt: {
-            type: Date,
-            default: Date.now
-        }
     }],
-
+    leader:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Profile",
+    },
     // List of hunts that the team has participated in
-    hunts: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Hunt',
-    }],
+    hunts: {
+        type: [{
+            huntId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Hunt',
+                required: true // Reference to the Hunt model
+            },
+            startDate: {
+                type: Date,
+                default: Date.now, // When the team joined the hunt
+            },
+            endDate: {
+                type: Date,
+                default: null, // Will be updated when the hunt ends
+            },
+            status: {
+                type: String,
+                enum: ['ongoing', 'completed'],
+                default: 'ongoing', // Status of the hunt for the team
+            },
+            score: {
+                type: Number,
+                default: 0, // The score for this specific hunt
+            },
+            currentClueId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Clue',
+                required:false,
+                default: null, // Current clue for the hunt, initialized to null
+            },
+            solvedClues: {
+                type: [{
+                    clueId: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: 'Clue',
+                    },
+                    solvedAt: {
+                        type: Date,
+                        default: Date.now,
+                    },
+                }],
+                default: [],
+            },
+        }],
+        default: []
+    },
 
     // Track the current hunt and progress of the team
     currentHunt: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Hunt',
+        default: null, // Default to null
     },
-    
-    // To store the clues that the team has solved for each hunt
-    solvedClues: [{
-        huntId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Hunt'
-        },
-        clues: [{
-            clueId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Clue'
-            },
-            solvedAt: {
-                type: Date,
-                default: Date.now
-            }
-        }]
-    }],
 
     // Track the total score of the team
     score: {
         type: Number,
-        default: 0
+        default: 0, // Total score across all hunts
     },
 
     // The date when the team joined the hunt
