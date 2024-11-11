@@ -6,85 +6,49 @@ const Profile = require('../models/profileModel.js'); // Assuming your Profile m
 
 exports.createLeaderboard = async (req, res) => {
     try {
-        // Find the Hunt by its ID
-        const hunt = await Hunt.findById(req.params.id);
+        const { id } = req.params;
+        const hunt = await Hunt.findById(id);
         if (!hunt) {
             return res.status(404).json({
                 message: 'Hunt with given ID not found'
             });
         }
-
-        // Extract totalUsers (array of profileIds) from the Hunt schema
-        const totalUsers = hunt.totalUsers;
-
-        // Array to store individual scores
         const individualScores = [];
-
-        // Array to store team scores
         const teamScores = [];
-
-        // Iterate over totalUsers (profileIds) to calculate individual scores
-        for (const userId of totalUsers) {
+        for (const userId of hunt.totalUsers) {
             const profile = await Profile.findById(userId);
-            if (!profile) {
-                continue; // Skip if profile is not found
-            }
+            if (!profile) continue;
 
-            // Calculate individual score and completion time
-            const team = await Team.findOne({ 'players.profileId': userId, 'hunts.huntId': hunt._id });
-            if (!team) {
-                continue; // Skip if no team found for the user in this hunt
-            }
-
-            const huntData = team.hunts.find(h => h.huntId.toString() === hunt._id.toString());
-
-            // Assuming the score is stored under hunt.score in the team schema
-            const score = huntData ? huntData.score : 0;
-            const completionTime = huntData ? huntData.endDate : null; // End date if the hunt is completed
-
-            // Add individual score entry to the array
+            const userHunt = profile.activeHunts.find(h => h.huntId.toString() === id);
+            if (!userHunt) continue;
+            const score = userHunt.points;
+            console.log("Active Hunt :",userHunt);
+            console.log("Score :",score);
+            // console.log("Completion time :",completionTime);
             individualScores.push({
                 playerId: profile._id,
                 score: score,
-                completionTime: completionTime,
-                rank: 0, // Rank will be calculated later
+                completionTime:null,
+                rank: 0
             });
         }
+        console.log("Individuals Score:",individualScores);
+        for (const teamId of hunt.teams) {
+            const teamObj = await Team.findById(teamId);
+            if (!teamObj) continue;
 
-        // Iterate over teams to calculate team scores
-        for (const team of hunt.teams) {
-            const teamObj = await Team.findById(team.teamId); // Assuming teams are in an array
-            if (!teamObj) {
-                continue; // Skip if no team found
-            }
+            const teamHuntData = teamObj.hunts.find(h => h.huntId.toString() === id);
+            if (!teamHuntData) continue;
 
-            // Calculate the team's score (You can sum up individual scores or have a specific logic for it)
-            let totalTeamScore = 0;
-            const completionTimes = [];
-
-            // Sum up individual scores for each player in the team
-            for (const player of teamObj.players) {
-                const playerId = player.profileId;
-                const individualScore = individualScores.find(ind => ind.playerId.toString() === playerId.toString());
-                if (individualScore) {
-                    totalTeamScore += individualScore.score;
-                    completionTimes.push(individualScore.completionTime);
-                }
-            }
-
-            // Calculate team completion time (take the earliest completion time from all players)
-            const teamCompletionTime = Math.min(...completionTimes.filter(time => time !== null));
-
-            // Add the team entry to the array
+            const totalTeamScore = teamHuntData.score;
+            const startDate = teamHuntData.startDate;
             teamScores.push({
                 teamId: teamObj._id,
                 score: totalTeamScore,
-                completionTime: teamCompletionTime,
-                rank: 0, // Rank will be calculated later
+                rank: 0
             });
         }
 
-        // Create or update the leaderboard for the hunt
         let leaderboard = await Leaderboard.findOne({ huntId: hunt._id });
         if (!leaderboard) {
             leaderboard = new Leaderboard({
@@ -93,14 +57,11 @@ exports.createLeaderboard = async (req, res) => {
                 teamScores: teamScores,
             });
         } else {
-            leaderboard.individualScores = individualScores; // Update individual scores
-            leaderboard.teamScores = teamScores; // Update team scores
+            leaderboard.individualScores = individualScores;
+            leaderboard.teamScores = teamScores;
         }
 
-        // Sort and update ranks for both individual and team scores
-        await leaderboard.updateRanks(); // This method will update ranks for both
-
-        // Save the leaderboard
+        await leaderboard.updateRanks();
         await leaderboard.save();
 
         res.status(200).json({
@@ -115,6 +76,7 @@ exports.createLeaderboard = async (req, res) => {
         });
     }
 };
+
 
 exports.getLeaderboard = async (req, res) => {
     try {
@@ -132,15 +94,15 @@ exports.getLeaderboard = async (req, res) => {
 // Update score for an individual player
 exports.updateIndividualScore = async (req, res) => {
     try {
-        const { huntId, playerId, score, completionTime } = req.body;
+        const { huntId, playerId, score } = req.body;
 
-        let leaderboard = await Leaderboard.findOne({ huntId });
+        let leaderboard = await Leaderboard.findOne({ huntId })
+        console.log("Leaderbboard :",leaderboard);
         if (!leaderboard) {
             leaderboard = new Leaderboard({ huntId, individualScores: [], teamScores: [] });
         }
-
         // Find or create an individual score entry
-        let playerEntry = leaderboard.individualScores.find(entry => entry.playerId.toString() === playerId);
+        let playerEntry = leaderboard.individualScores.find(entry => entry.playerId.toString() === playerId.toString());
         if (!playerEntry) {
             playerEntry = { playerId, score: 0 };
             leaderboard.individualScores.push(playerEntry);
@@ -148,8 +110,6 @@ exports.updateIndividualScore = async (req, res) => {
 
         // Update the score and completion time if provided
         playerEntry.score += score;
-        if (completionTime) playerEntry.completionTime = completionTime;
-
         await leaderboard.updateRanks();
         res.status(200).json({ message: "Score updated", leaderboard });
     } catch (error) {
@@ -160,27 +120,45 @@ exports.updateIndividualScore = async (req, res) => {
 // Update score for a team
 exports.updateTeamScore = async (req, res) => {
     try {
-        const { huntId, teamId, score, completionTime } = req.body;
+        let { huntId, teamId, score } = req.body;
 
-        let leaderboard = await Leaderboard.findOne({ huntId });
-        if (!leaderboard) {
-            leaderboard = new Leaderboard({ huntId, individualScores: [], teamScores: [] });
+        // Validate that huntId and teamId are 24-character valid ObjectId strings
+        if (huntId.length !== 24 || teamId.length !== 24) {
+            return res.status(400).json({ message: "Invalid huntId or teamId length" });
         }
 
-        // Find or create a team score entry
-        let teamEntry = leaderboard.teamScores.find(entry => entry.teamId.toString() === teamId);
+        // Convert huntId and teamId to ObjectId
+        const huntObjectId = mongoose.Types.ObjectId(huntId);
+        const teamObjectId = mongoose.Types.ObjectId(teamId);
+
+        // Convert score to a number
+        score = Number(score);
+        if (isNaN(score)) {
+            return res.status(400).json({ message: "Score must be a valid number" });
+        }
+
+        // Find or create the leaderboard entry
+        let leaderboard = await Leaderboard.findOne({ huntId: huntObjectId });
+        if (!leaderboard) {
+            leaderboard = new Leaderboard({ huntId: huntObjectId, individualScores: [], teamScores: [] });
+        }
+
+        // Find or create the team score entry
+        let teamEntry = leaderboard.teamScores.find(entry => entry.teamId.toString() === teamObjectId.toString());
         if (!teamEntry) {
-            teamEntry = { teamId, score: 0 };
+            teamEntry = { teamId: teamObjectId, score: 0 };
             leaderboard.teamScores.push(teamEntry);
         }
 
-        // Update the score and completion time if provided
+        // Update the team score
         teamEntry.score += score;
-        if (completionTime) teamEntry.completionTime = completionTime;
 
+        // Update ranks and save the leaderboard
         await leaderboard.updateRanks();
+        await leaderboard.save();
+
         res.status(200).json({ message: "Score updated", leaderboard });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ message: "Error while updating team score", error: error.message });
     }
 };

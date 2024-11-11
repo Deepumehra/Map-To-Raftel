@@ -15,7 +15,7 @@ exports.createTeam = async (req, res) => {
 // Get a specific team by ID
 exports.getTeam = async (req, res) => {
     try {
-        const team = await Team.findById(req.params.id).populate('players.profileId hunts currentHunt solvedClues.clues.clueId');
+        const team = await Team.findById(req.params.id);
         if (!team) return res.status(404).json({ message: "Team not found" });
         res.status(200).json(team);
     } catch (error) {
@@ -76,6 +76,7 @@ exports.joinHunt = async (req, res) => {
         hunt.teams.push(req.params.id);
         team.joinedAt = Date.now();
         await team.save();
+        await hunt.save();
         res.status(200).json({ message: "Team joined the hunt", team });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -90,7 +91,6 @@ exports.solveClue = async (req, res) => {
         if (!team) return res.status(404).json({ message: "Team not found" });
 
         const { profileId, huntId } = req.body;
-
         // Find the hunt by its ID
         const hunt = team.hunts.find(h => h.huntId.toString() === huntId);
         if (!hunt) return res.status(404).json({ message: "Hunt not found for this team" });
@@ -102,7 +102,7 @@ exports.solveClue = async (req, res) => {
         // Fetch the clue by ID
         const clue = await Clue.findById(currentClueId);
         if (!clue) return res.status(404).json({ message: "Clue not found" });
-
+        console.log("Clue :",clue);
         // If there is a next clue, solve this one and move to the next clue
         if (clue.nextClueId) {
             hunt.solvedClues.push({
@@ -111,7 +111,8 @@ exports.solveClue = async (req, res) => {
                 solvedAt: new Date(),
             });
             hunt.currentClueId = clue.nextClueId; // Set the next clue as current clue
-            hunt.score += clue.points || 0; // Make sure `points` exist, or default to 0
+            hunt.score += clue.points; // Make sure `points` exist, or default to 0
+            team.score+=clue.points || 0;
         } else {
             // If no next clue, mark hunt as completed
             hunt.solvedClues.push({
@@ -121,10 +122,11 @@ exports.solveClue = async (req, res) => {
             });
             hunt.score += clue.points || 0; // Ensure points exist
             hunt.status = "completed"; // Mark hunt as completed
+            team.score+=clue.points || 0;
             hunt.endDate = new Date(); // Set the end date of the hunt
             hunt.currentClueId = null; // No more clues, set current clue to null
         }
-
+        console.log("Hunt :",hunt);
         // Save the updated team
         await team.save();
 

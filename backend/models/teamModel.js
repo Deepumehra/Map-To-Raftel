@@ -51,8 +51,7 @@ const teamSchema = new mongoose.Schema({
             currentClueId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Clue',
-                required:false,
-                default: null, // Current clue for the hunt, initialized to null
+                required:true,
             },
             solvedClues: {
                 type: [{
