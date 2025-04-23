@@ -13,12 +13,9 @@ MapToRaftel is a clue-based interactive map navigation web application tailored 
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React.js, Tailwind CSS, Mapbox API (or Google Maps API)
+- **Frontend**: React.js, Tailwind CSS, Leaflet.js
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB (Mongoose for schema modeling)
 - **Authentication**: JWT for secure login/signup
 - **Image Storage**: Cloudinary (for clue images or location hints)
-- **Deployment**: Render/Netlify/Heroku (as applicable)
-
-## 📁 Project Structure
 
